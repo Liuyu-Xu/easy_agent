@@ -88,4 +88,10 @@ def _safe_error(
     error = error_type(message, run_id=run_id)
     error._framework_origin = _FRAMEWORK_ORIGIN
     error._framework_message = message
+    if cause is not None:
+        # Only the adapter's private retry classification crosses this boundary;
+        # no third-party attribute or text is trusted or forwarded.
+        error._easy_agent_retryable = bool(
+            getattr(cause, "_easy_agent_retryable", False)
+        )
     return error

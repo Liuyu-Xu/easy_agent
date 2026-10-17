@@ -125,18 +125,14 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(graph._active_runs, 0)
 
     async def test_unsupported_builtin_capabilities_fail_before_network(self):
-        class Echo(Tool):
-            def forward(self, info):
-                return info
-
-        for attributes in ({"output_schema": dict}, {"tools": [Echo(tool_name="echo")]}):
-            with self.subTest(attributes=list(attributes)):
-                graph = self.graph(allowed_tools={"echo"})
-                graph.llm = Node(**attributes)
-                with patch("easy_agent._api._client") as factory:
-                    with self.assertRaises(UnsupportedFeatureError):
-                        await graph.arun([Info("x")])
-                    factory.assert_not_called()
+        # Internal tools are supported since the 2026-10-17 execution fixes;
+        # structured output is still an explicit limitation.
+        graph = self.graph()
+        graph.llm = Node(output_schema=dict)
+        with patch("easy_agent._api._client") as factory:
+            with self.assertRaises(UnsupportedFeatureError):
+                await graph.arun([Info("x")])
+            factory.assert_not_called()
 
     async def test_provider_and_invalid_config_are_rejected(self):
         for options in ({"provider": "other"}, {"base_url": "http://remote.example"},
@@ -191,7 +187,9 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
                 )
 
             with self.subTest(status=status):
-                graph = self.graph(max_attempts=3)
+                # max_attempts=1 isolates sanitisation from the retry policy;
+                # retryable statuses are covered in test_execution_fixes.py.
+                graph = self.graph(max_attempts=1)
                 graph.llm = Node()
                 with self.transport(handler) as clients:
                     with self.assertRaises(NodeExecutionError) as raised:
@@ -208,7 +206,7 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
                 raise kind(SECRET, request=request)
 
             with self.subTest(kind=kind.__name__):
-                graph = self.graph()
+                graph = self.graph(max_attempts=1)
                 graph.llm = Node()
                 with self.transport(handler):
                     with self.assertRaises(NodeExecutionError) as raised:

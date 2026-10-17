@@ -404,7 +404,9 @@ class Step1DefinitionTests(unittest.TestCase):
                     await asyncio.to_thread(release.wait)
                 return Info("late")
 
-        graph = self.graph(timeout=0.01)
+        # 0.05s stays above this host's 15.625ms event-loop clock resolution so
+        # the deadline really elapses after the node starts.
+        graph = self.graph(timeout=0.05)
         graph.node = Stubborn()
 
         def run():
@@ -710,11 +712,13 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
 
         class Later(Node):
             async def forward(self, info):
-                clock[0] += 0.03
+                clock[0] += 0.2
                 await asyncio.sleep(0)
                 return info
 
-        graph = self.graph(timeout=0.01)
+        # 0.1s keeps the attempt above this host's 15.625ms event-loop clock
+        # resolution; the controlled clock still proves the ordering claim.
+        graph = self.graph(timeout=0.1)
         graph.source = Identity()
         graph.target = Later(timeout=1)
         graph.source.send_to(graph.target)

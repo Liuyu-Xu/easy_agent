@@ -199,49 +199,9 @@ class Node:
         """Return an immutable snapshot of every declared downstream relation."""
 
         owner = self._require_owner()
-        result: list[Mapping[str, Any]] = []
-        for edge in owner._port_edges:
-            if edge.source == self.id:
-                result.append(MappingProxyType({
-                    "target_id": edge.target, "target_name": owner._target_name(edge.target),
-                    "kind": "port", "output_port": edge.output, "input_port": edge.input,
-                }))
-        for target_id in self._outgoing:
-            result.append(
-                MappingProxyType(
-                    {
-                        "target_id": target_id,
-                        "target_name": owner._target_name(target_id),
-                        "kind": "send",
-                    }
-                )
-            )
-        if self._route_rule is not None:
-            for value, target_id in self._route_rule.cases:
-                result.append(
-                    MappingProxyType(
-                        {
-                            "target_id": target_id,
-                            "target_name": owner._target_name(target_id),
-                            "kind": "route",
-                            "field": self._route_rule.field,
-                            "case": value,
-                        }
-                    )
-                )
-            if self._route_rule.default_target_id is not _NO_DEFAULT:
-                target_id = self._route_rule.default_target_id
-                result.append(
-                    MappingProxyType(
-                        {
-                            "target_id": target_id,
-                            "target_name": owner._target_name(target_id),
-                            "kind": "route_default",
-                            "field": self._route_rule.field,
-                        }
-                    )
-                )
-        return tuple(result)
+        return tuple(
+            MappingProxyType(spec) for spec in owner._downstream_specs(self)
+        )
 
     def set_downstreams(self, targets: list["Node"] | tuple["Node", ...]) -> None:
         self._set_downstreams(tuple(targets))

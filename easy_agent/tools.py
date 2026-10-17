@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 from typing import Any
 
@@ -9,6 +10,7 @@ from .errors import _safe_error, UnsupportedFeatureError
 from .info import Info
 from .config import _UNSET
 from .node import Node
+from ._blocking import submit_blocking
 
 
 class Tool(Node):
@@ -50,7 +52,16 @@ class Tool(Node):
             raise _safe_error(UnsupportedFeatureError,
                 "Tool 必须覆盖 forward(info)；旧版 invoke(info)仅作兼容"
             )
-        result = legacy(info)
+        if inspect.iscoroutinefunction(legacy):
+            return await legacy(info)
+        # A blocking legacy invoke must not freeze the run's event loop. It runs
+        # in the attempt's tracked pool so its definition lease is held until the
+        # thread really returns; the deadline still cannot kill the thread.
+        future = submit_blocking(legacy, info)
+        if future is None:
+            result = await asyncio.to_thread(legacy, info)
+        else:
+            result = await asyncio.wrap_future(future)
         if inspect.isawaitable(result):
             result = await result
         return result
