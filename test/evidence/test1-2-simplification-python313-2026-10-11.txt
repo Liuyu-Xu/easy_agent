@@ -1,0 +1,6 @@
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+----------------------------------------------------------------------
+Ran 149 tests in 3.206s
+
+OK

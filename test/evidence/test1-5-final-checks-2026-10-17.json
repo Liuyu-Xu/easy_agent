@@ -1,0 +1,38 @@
+{
+  "source_files_checked": 36,
+  "source_fingerprint_mismatches": [],
+  "local_links_checked": 97,
+  "missing_local_links": [],
+  "core_unused_imports": [],
+  "identical_core_function_bodies": [],
+  "core_modules": 11,
+  "core_lines": 3912,
+  "involve_parameters": [
+    "nodes",
+    "relations",
+    "start",
+    "end"
+  ],
+  "graph_result_removed": true,
+  "single_sync_entry": true,
+  "hub_is_node_subclass": true,
+  "deterministic_results": {
+    "test1-5-common-r5-2026-10-17.txt": [
+      "204",
+      "7.243s"
+    ],
+    "test1-5-python313-r5-2026-10-17.txt": [
+      "204",
+      "5.754s"
+    ]
+  },
+  "live_status": "passed",
+  "request_count": 19,
+  "total_tokens": 778,
+  "all_models_deepseek_flash": true,
+  "all_finish_stop": true,
+  "all_resources_exited": true,
+  "all_credential_checks_passed": true,
+  "implicit_shared_info_verified": true,
+  "hub_port_mapping_verified": true
+}

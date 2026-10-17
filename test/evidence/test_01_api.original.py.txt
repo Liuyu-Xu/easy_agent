@@ -1,0 +1,134 @@
+"""First real API test. Run with the conda common Python interpreter."""
+
+from __future__ import annotations
+
+import argparse
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import re
+import sys
+from time import monotonic
+from uuid import uuid4
+
+ROOT = Path(__file__).resolve().parents[1]
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
+
+from easy_agent import ConfigurationError, Graph, Info, Node
+from easy_agent.config import read_selected_env
+
+DEFAULT_ENV = Path("D:/code/Python/agent/hello_agent/test.env")
+EXPECTED = "API_TEST_OK"
+
+
+class TestCheckError(RuntimeError):
+    def __init__(self, check: str, run_id: str):
+        super().__init__(check)
+        self.check = check
+        self.run_id = run_id
+
+
+def run_test(env_file: Path) -> dict:
+    settings = read_selected_env(env_file, {"LLM_MODEL_ID", "LLM_BASE_URL", "LLM_API_KEY"})
+    if not all(settings.get(name) for name in ("LLM_MODEL_ID", "LLM_BASE_URL", "LLM_API_KEY")):
+        raise ConfigurationError("Test configuration requires the three LLM_* settings")
+    key = settings["LLM_API_KEY"]
+    if "LLM_API_KEY" in os.environ and os.environ["LLM_API_KEY"] != key:
+        raise ConfigurationError("An environment variable overrides the supplied test credential")
+
+    graph = Graph(
+        env_file=env_file,
+        provider="deepseek",
+        model=settings["LLM_MODEL_ID"],
+        base_url=settings["LLM_BASE_URL"],
+        api_key_env="LLM_API_KEY",
+        execution="sequential",
+        timeout=30,
+        max_attempts=1,
+        max_output_tokens=32,
+        log_dir=HERE / ".easy_agent" / "logs",
+    )
+    graph.llm = Node(
+        prompt="Reply with exactly API_TEST_OK. Do not add punctuation or explanations.",
+        output_schema=str,
+    )
+    started = monotonic()
+    result = graph(Info("First API connectivity test"))
+    duration = round(monotonic() - started, 3)
+    # Graph.logs() filters to graph events. This test also needs model/audit
+    # events, matching the existing live regression's complete event query.
+    events = graph._event_store.query(run_id=result.run_id, limit=1000)
+    serialized = json.dumps(
+        {"events": events, "graph": graph.to_dict(), "output": result.text},
+        ensure_ascii=False,
+    )
+    if key in serialized:
+        raise TestCheckError("credential_protection", result.run_id)
+    if result.text.strip() != EXPECTED:
+        raise TestCheckError("expected_output", result.run_id)
+    requests = [event for event in events if event["event_type"] == "ModelRequestStarted"]
+    responses = [event for event in events if event["event_type"] == "ModelRequestFinished"]
+    successes = [event for event in events if event["event_type"] == "GraphRunSucceeded"]
+    if len(requests) != 1 or len(responses) != 1 or len(successes) != 1:
+        raise TestCheckError("event_counts", result.run_id)
+    if graph._active_runs or graph._cleanups:
+        raise TestCheckError("resource_cleanup", result.run_id)
+    references = [event for event in events if event["event_type"] == "SecretReferenceResolved"]
+    return {
+        "status": "passed",
+        "run_id": result.run_id,
+        "output": result.text.strip(),
+        "expected": EXPECTED,
+        "duration_seconds": duration,
+        "request_count": 1,
+        "max_attempts": 1,
+        "max_output_tokens": 32,
+        **responses[0]["data"],
+        "secret_source": references[0]["data"]["source"],
+        "secret_absent_from_logs_and_export": True,
+        "resources_exited": True,
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--env-file", type=Path, default=DEFAULT_ENV)
+    parser.add_argument("--evidence", type=Path)
+    args = parser.parse_args()
+    try:
+        report = run_test(args.env_file)
+    except Exception as exc:
+        # Do not print the original exception, response, headers, or traceback.
+        report = {
+            "status": "failed",
+            "error_type": type(exc).__name__,
+            "run_id": getattr(exc, "run_id", None),
+        }
+        status = re.search(r"\bHTTP (\d{3})\b", str(exc))
+        if status:
+            report["http_status"] = int(status.group(1))
+        if isinstance(exc, TestCheckError):
+            report["failed_check"] = exc.check
+    report.update({
+        "tested_at_utc": datetime.now(timezone.utc).isoformat(),
+        "python": platform.python_version(),
+        "python_executable": sys.executable,
+        "python_environment": sys.prefix,
+        "test_script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    })
+    evidence = args.evidence or (
+        HERE / "evidence" / f"test_01_api-{report.get('run_id') or uuid4().hex}.json"
+    )
+    evidence.parent.mkdir(parents=True, exist_ok=True)
+    evidence.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps(report, ensure_ascii=True, indent=2))
+    print("Evidence: " + str(evidence.resolve()))
+    return 0 if report["status"] == "passed" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

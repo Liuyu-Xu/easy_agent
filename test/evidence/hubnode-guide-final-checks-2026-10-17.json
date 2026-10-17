@@ -1,0 +1,23 @@
+{
+  "documents": [
+    "v0.3-hubnode-modification-guide.md",
+    "v0.3-hubnode-design-issues.md"
+  ],
+  "document_sha256": {
+    "v0.3-hubnode-modification-guide.md": "e0a7a67dfe27775d11cb4e0de36e46fbf4cd769bccbed3b309834bcdc1593357",
+    "v0.3-hubnode-design-issues.md": "490299bd4206b143b34e10854af3e829bcfdbc74943bbd11879f2c1c4533ff25"
+  },
+  "local_links_checked": 10,
+  "missing_links": [],
+  "python_examples_syntax_checked_only": 5,
+  "source_files_checked": 33,
+  "source_fingerprint_mismatches": [],
+  "deterministic_tests_passed": 180,
+  "live_status": "passed",
+  "request_count": 10,
+  "total_tokens": 421,
+  "all_models_deepseek_flash": true,
+  "all_finish_reasons_stop": true,
+  "all_resources_exited": true,
+  "all_credential_checks_passed": true
+}

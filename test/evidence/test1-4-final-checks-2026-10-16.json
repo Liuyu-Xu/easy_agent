@@ -1,0 +1,19 @@
+{
+  "source_files_checked": 33,
+  "source_fingerprint_mismatches": [],
+  "local_links_checked": 66,
+  "missing_local_links": [],
+  "involve_parameters": [
+    "nodes",
+    "relations",
+    "start",
+    "end"
+  ],
+  "graph_result_removed": true,
+  "deterministic_tests_each_environment": 180,
+  "live_status": "passed",
+  "request_count": 10,
+  "total_tokens": 419,
+  "all_resources_exited": true,
+  "all_credential_checks_passed": true
+}

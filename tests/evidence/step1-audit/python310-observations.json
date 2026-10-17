@@ -1,0 +1,64 @@
+{
+  "python": "3.10.20",
+  "observations": {
+    "shared_editor_during_run": {
+      "caller_error": "GraphValidationError",
+      "succeeded_log_count": 1,
+      "active_runs_after_exit": 1,
+      "tool_leases_after_exit": 1,
+      "edit_after_exit_error": "GraphValidationError"
+    },
+    "foreign_rollback": {
+      "bind_error": "OwnershipError",
+      "foreign_marked_after_rejection": true,
+      "other_prompt_after_rollback": "before"
+    },
+    "deleted_tools": {
+      "delete_error": null,
+      "restore_error": "AttributeError",
+      "remove_node_error": "AttributeError",
+      "export_error": "AttributeError"
+    },
+    "node_attribute_collision": {
+      "send_to_error": "AttributeError",
+      "downstreams_error": "AttributeError"
+    },
+    "unrelated_graph_lock": {
+      "unrelated_reader_blocked": true,
+      "reader_finished_after_edit": true
+    },
+    "retained_tasks": {
+      "last_steps_owned_done": [
+        10,
+        20,
+        20
+      ],
+      "owned_task_counts": [
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20
+      ]
+    },
+    "unobserved_errors": {
+      "unretrieved_done_failures": 1,
+      "pending_tasks": 0
+    },
+    "timeout_log_control": {
+      "fail_log": false,
+      "caller_error": "NodeTimeoutError",
+      "sibling_success_after_timeout_observed": 0
+    },
+    "timeout_log_failure": {
+      "fail_log": true,
+      "caller_error": "LoggingError",
+      "sibling_success_after_timeout_observed": 1
+    }
+  }
+}

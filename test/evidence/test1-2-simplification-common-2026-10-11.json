@@ -1,0 +1,170 @@
+{
+  "status": "passed",
+  "round": "test1-2-simplification-common-2026-10-11",
+  "python": "3.10.20",
+  "python_executable": "D:\\anaconda3\\envs\\common\\python.exe",
+  "python_environment": "D:\\anaconda3\\envs\\common",
+  "env_file": "D:\\code\\Python\\agent\\hello_agent\\test.env",
+  "planned_request_count": 4,
+  "request_count": 4,
+  "request_count_basis": "ModelRequestStarted events",
+  "max_output_tokens_per_request": 32,
+  "max_attempts": 1,
+  "cases": [
+    {
+      "case": "test_01_api",
+      "status": "passed",
+      "planned_requests": 1,
+      "run_id": "185ab47de6d94b39aea4b7d9c1af4ce0",
+      "output": "API_TEST_OK",
+      "request_count": 1,
+      "models": [
+        {
+          "node_id": "362eeab8e9cc461a8fdd6c1b133f9fab",
+          "node_name": "answer",
+          "max_output_tokens": 32,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 20,
+            "completion_tokens": 3,
+            "total_tokens": 23,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 20,
+        "completion_tokens": 3,
+        "total_tokens": 23,
+        "reasoning_tokens": null
+      },
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 1,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "duration_seconds": 0.844
+    },
+    {
+      "case": "test1_2",
+      "status": "passed",
+      "planned_requests": 2,
+      "run_id": "d3980dfa0d784c98bdf386248a6549ec",
+      "output": "TEST1_2_OK",
+      "request_count": 2,
+      "models": [
+        {
+          "node_id": "96c0a78fccdc4d10afb85efd1090d269",
+          "node_name": "node_96c0a78fccdc4d10afb85efd1090d269",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 3,
+            "total_tokens": 24,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "2d1d494762d344a0a120fa52a8ca29c8",
+          "node_name": "node_2d1d494762d344a0a120fa52a8ca29c8",
+          "max_output_tokens": 32,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 39,
+            "completion_tokens": 5,
+            "total_tokens": 44,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 2,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "chain_delivery_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 1.156
+    },
+    {
+      "case": "async_json_input",
+      "status": "passed",
+      "planned_requests": 1,
+      "run_id": "23c67eb667be416dbf3decb00bcd8e89",
+      "output": "7",
+      "request_count": 1,
+      "models": [
+        {
+          "node_id": "5ed523f49ef94050a3c3e895d68f0f5a",
+          "node_name": "llm",
+          "max_output_tokens": 32,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 30,
+            "completion_tokens": 1,
+            "total_tokens": 31,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 30,
+        "completion_tokens": 1,
+        "total_tokens": 31,
+        "reasoning_tokens": null
+      },
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 1,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "duration_seconds": 0.828
+    }
+  ],
+  "source_sha256": {
+    "easy_agent/__init__.py": "f73bbb8f4a08a50e56e9b624baf6dd978d7515cfd7d39247171c321492b5ee72",
+    "easy_agent/_api.py": "92eaaddab0feb6b53c05cce7e4195ce1ccf1830ee2ba8b7f4486388d83528528",
+    "easy_agent/_definition.py": "f000987d184bc861522d0e20b1b105c84f9937cd6e1fe5f0287f9c2f461befdb",
+    "easy_agent/config.py": "d4f115b3433528ef5da9399f579a7d285a890a1e0558f54971c0532441dc9db8",
+    "easy_agent/errors.py": "91e816f9a1f63f68d843d69f0230fde5fc0ea4e94b9b795d5bcd26c76a4fde3c",
+    "easy_agent/events.py": "b8ff2ea04cfb24f70cf9005bd881351729ba75f8ab1cf9d91cbf4a1dbce9097a",
+    "easy_agent/graph.py": "ae11cbeb3965afed515b43926495b7641892893cb2cba55ea122a2324b7619c0",
+    "easy_agent/info.py": "7b5ab3e6e5d977ed03be7ea4a2ddf14dc67d70f6997534710df71f3962e7a6c9",
+    "easy_agent/node.py": "3b4230c122d9894c09cc7b7eb22a7aad7dc1eb67dc24d0b2efd04fa2956a127c",
+    "easy_agent/tools.py": "17de6590a8acde929e7daced5f78cb8f3281e1470bc90e989b99648a9b53c6c6",
+    "tests/api_support.py": "dfefc2e476d2be79c84e20c07f4b106bb8821415fe7f2c53f9f7f47da77c1225",
+    "tests/live_api.py": "5c08b0d1a86081f413f66d15d733127f8c4f9b1777b5f005dfea84e1a55d03b5",
+    "tests/run_api_round.py": "1a0f4e74b1d5cbe3ff3cd53317e7539630d53bcf36ae84b93f762000c7c4767f",
+    "tests/test_api.py": "7e18c4e64db14ddabd90810c22be4fec42c3ca40369005e04a1844ceb39aee02",
+    "tests/test_error_boundary.py": "4a1c65500b4d915d6e57deb468f257b85df6ddd874a023e8377c2e8a900d8c0b",
+    "tests/test_involve.py": "8248a3cba643f2c9ca5ebce5b395c0dd383e957e3b455d7d7b1776b39eeb7b1f",
+    "tests/test_live_evidence.py": "918561aa55963f5ea7806f35d3332c2382bda12bcb41e6e15dff9f8bc73536c9",
+    "tests/test_step1.py": "74978ca5bc7ff99c2a53f830d95a3e4d1873fa50261b1fe8e3b01aef16fadaed",
+    "tests/test_user_surface.py": "68d6e9fa612de6e323f072e6e78306e929afda08a86bad97783914e36a1193e5",
+    "tests/test_v01.py": "db0f7f19e1acf01c341b7a9f904a192c4044c49446a93cdcc268016c24369335",
+    "tests/test_v02.py": "ed6a0ed28ceaa76ae891f77672fc656869575fa02a48636dd449ade5359fc087",
+    "tests/test_v03.py": "c8c04ba02e24a7cbba0316cf614444098f4983db999b04e4f5b81edcc5ea344f",
+    "test/__init__.py": "de8356c9f64c5b47f4301d4db65bcffdaef0375ef8e5c0e712661008f5387014",
+    "test/test1_1.py": "da3edc41eb65e15428f6879dff5d6347ac21925d68f7bad8703ede6127764f5a",
+    "test/test1_2.py": "4cf4cd7f7910cf6927035f5331430151d830f8d3af9f0eb50a6df58c9341c392",
+    "test/test_01_api.py": "ece32f8e69cd1ed669e2816e277edd74d597e31e96bcf98933f4214fc253ded0",
+    "test/test_02_chain.py": "9dc1866340c1b8c5e71795fe79df9fa650bd8b0fc60da1dd1d98263744bb3e7a",
+    "pyproject.toml": "3fcd180e382dbb90c026e8023a7f8c73e63a7a7acef4f32a57072c688db5a2e1"
+  },
+  "timestamp_utc": "2026-10-11T15:38:58.143917+00:00"
+}

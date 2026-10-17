@@ -1,0 +1,33 @@
+{
+  "core_modules": 10,
+  "core_lines": 3545,
+  "baseline_core_lines": 3602,
+  "core_line_delta": -57,
+  "changed_source_files": [
+    "easy_agent/_api.py",
+    "easy_agent/config.py",
+    "easy_agent/graph.py",
+    "easy_agent/node.py",
+    "tests/api_support.py",
+    "tests/test_api.py",
+    "tests/test_error_boundary.py",
+    "tests/test_involve.py",
+    "tests/test_step1.py",
+    "tests/test_user_surface.py",
+    "tests/test_v03.py",
+    "test/test1_1.py",
+    "test/test1_2.py",
+    "test/test1_3.py",
+    "test/test_01_api.py",
+    "test/test_02_chain.py"
+  ],
+  "unused_top_level_imports": [],
+  "duplicate_function_bodies": [],
+  "unread_dataclass_fields": [],
+  "test1_3_business_statements": 6,
+  "scope_notes": "Imports account for __all__; dataclass reads are checked across all core modules. These static checks do not prove absence of semantic redundancy.",
+  "clock_resolution_seconds": {
+    "monotonic": 0.015625,
+    "perf_counter": 1e-07
+  }
+}

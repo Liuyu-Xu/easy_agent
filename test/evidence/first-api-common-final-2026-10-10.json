@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "run_id": "289d746481584f9fa859114ed455c530",
+  "output": "API_TEST_OK",
+  "expected": "API_TEST_OK",
+  "duration_seconds": 0.609,
+  "request_count": 1,
+  "max_attempts": 1,
+  "max_output_tokens": 32,
+  "requested_model": "deepseek-flash",
+  "reported_model": "deepseek-flash",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 23,
+    "completion_tokens": 3,
+    "total_tokens": 26,
+    "reasoning_tokens": null
+  },
+  "secret_source": "env_file",
+  "secret_absent_from_logs_and_export": true,
+  "resources_exited": true,
+  "tested_at_utc": "2026-10-10T07:34:24.100836+00:00",
+  "python": "3.10.20",
+  "python_executable": "D:\\anaconda3\\envs\\common\\python.exe",
+  "python_environment": "D:\\anaconda3\\envs\\common",
+  "test_script_sha256": "fc32576cd6d896ca0d66fe0f3a7825c17aac9a00e1a3d27b690b21e276235a22"
+}

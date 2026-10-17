@@ -1,0 +1,55 @@
+test_async_broadcast_and_structured_join (test_v01.V01Tests.test_async_broadcast_and_structured_join) ... ok
+test_auto_registration_relations_and_ownership (test_v01.V01Tests.test_auto_registration_relations_and_ownership) ... ok
+test_bounded_feedback_loop (test_v01.V01Tests.test_bounded_feedback_loop) ... ok
+test_broadcast_without_join_is_rejected (test_v01.V01Tests.test_broadcast_without_join_is_rejected) ... ok
+test_builtin_llm_protocol_is_explicitly_unresolved (test_v01.V01Tests.test_builtin_llm_protocol_is_explicitly_unresolved) ... ok
+test_dotenv_is_private_and_secret_is_not_exported_or_logged (test_v01.V01Tests.test_dotenv_is_private_and_secret_is_not_exported_or_logged) ... ok
+test_failed_replacement_keeps_original_registration (test_v01.V01Tests.test_failed_replacement_keeps_original_registration) ... ok
+test_info_is_deeply_immutable_and_convenient (test_v01.V01Tests.test_info_is_deeply_immutable_and_convenient) ... ok
+test_passthrough_keeps_identity_until_graph_publishes_result (test_v01.V01Tests.test_passthrough_keeps_identity_until_graph_publishes_result) ... ok
+test_removed_node_cannot_masquerade_as_replacement (test_v01.V01Tests.test_removed_node_cannot_masquerade_as_replacement) ... ok
+test_route_without_match_fails_with_run_id (test_v01.V01Tests.test_route_without_match_fails_with_run_id) ... ok
+test_sequential_chain_result_provenance_and_logs (test_v01.V01Tests.test_sequential_chain_result_provenance_and_logs) ... ok
+test_sync_call_inside_running_loop_is_rejected (test_v01.V01Tests.test_sync_call_inside_running_loop_is_rejected) ... ok
+test_unsupported_execution_modes_fail_without_downgrade (test_v01.V01Tests.test_unsupported_execution_modes_fail_without_downgrade) ... ok
+test_async_timeout_stops_run_without_retrying (test_v02.V02Tests.test_async_timeout_stops_run_without_retrying) ... ok
+test_defaults_log_dir_and_python_dotenv (test_v02.V02Tests.test_defaults_log_dir_and_python_dotenv) ... ok
+test_multi_step_linear_branches_can_join (test_v02.V02Tests.test_multi_step_linear_branches_can_join) ... ok
+test_node_definition_is_frozen_while_graph_runs (test_v02.V02Tests.test_node_definition_is_frozen_while_graph_runs) ... ok
+test_python_timeout_error_is_not_graph_deadline (test_v02.V02Tests.test_python_timeout_error_is_not_graph_deadline) ... D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+ok
+test_tool_is_a_node_and_participates_in_info_flow (test_v02.V02Tests.test_tool_is_a_node_and_participates_in_info_flow) ... ok
+test_business_timeout_is_not_a_framework_deadline (test_v03.V03Tests.test_business_timeout_is_not_a_framework_deadline) ... ok
+test_dotenv_is_literal_and_rejects_ambiguous_input (test_v03.V03Tests.test_dotenv_is_literal_and_rejects_ambiguous_input) ... ok
+test_downstream_editing_and_atomic_replacement (test_v03.V03Tests.test_downstream_editing_and_atomic_replacement) ... ok
+test_dynamic_scheduler_respects_per_run_concurrency (test_v03.V03Tests.test_dynamic_scheduler_respects_per_run_concurrency) ... ok
+test_failed_graph_edit_restores_relations_and_node_config (test_v03.V03Tests.test_failed_graph_edit_restores_relations_and_node_config) ... ok
+test_forward_only_tool_is_instantiable_and_runs (test_v03.V03Tests.test_forward_only_tool_is_instantiable_and_runs) ... ok
+test_max_attempts_counts_the_first_attempt_and_retry_is_compatible (test_v03.V03Tests.test_max_attempts_counts_the_first_attempt_and_retry_is_compatible) ... ok
+test_mutable_definition_values_are_normalized_on_every_assignment (test_v03.V03Tests.test_mutable_definition_values_are_normalized_on_every_assignment) ... ok
+test_optional_pydantic_v2_schema_is_strict (test_v03.V03Tests.test_optional_pydantic_v2_schema_is_strict) ... ok
+test_outer_cancellation_cleans_owned_tasks_before_unfreezing (test_v03.V03Tests.test_outer_cancellation_cleans_owned_tasks_before_unfreezing) ... ok
+test_receive_dependency_cannot_be_removed_outside_transaction (test_v03.V03Tests.test_receive_dependency_cannot_be_removed_outside_transaction) ... ok
+test_replacement_migrates_entry_and_self_route (test_v03.V03Tests.test_replacement_migrates_entry_and_self_route) ... ok
+test_strict_builtin_schema_rejects_bool_as_int (test_v03.V03Tests.test_strict_builtin_schema_rejects_bool_as_int) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 0.370s
+
+OK
+
+Path                                         Hash
+----                                         ----
+D:\project\easy_agent\easy_agent\__init__.py 1DADD6483FACDCFF13D0870BB2AC5F6DFB4D6E19A01505280B52EE7522F10745
+D:\project\easy_agent\easy_agent\config.py   7270D78F19AA64348BA14F08AA0527EA91A9DC8E6EE4A11F7C7A84DDE3830981
+D:\project\easy_agent\easy_agent\errors.py   A751DA8648D626B785817E2DFB5252537652164C4B36E76C8C48300B56C78DAF
+D:\project\easy_agent\easy_agent\events.py   6E3516A4332C48E7780E6BA0E1463EED20392AE4BF768041AD81FE118E0CA1DB
+D:\project\easy_agent\easy_agent\graph.py    12258B8131A08498A7C4CC29F9CFE2AA7555F926C619D76DC83B732041CF3BC3
+D:\project\easy_agent\easy_agent\info.py     CAFF9340B541C76897721B87E3F1686A9DD774347A4AA6EFE5507090E40E952D
+D:\project\easy_agent\easy_agent\node.py     FD6C47C36D87F56BE97453AF844540F46695964BFC1C3471A8AA3E3BCE98788E
+D:\project\easy_agent\easy_agent\tools.py    41A6182B7CB4D3E0EAC15E72183EBA6C5A55F59C038EF7539849F3C5332159FB
+D:\project\easy_agent\tests\test_v01.py      A0668D7365EE7CE2B4A29F5CCC9166C3E43102D91CD0AA9B513F6049064643AA
+D:\project\easy_agent\tests\test_v02.py      688647263982AE9AAEA3C3444690844AAC5AA036F70B2401D6259BECF2F8A07A
+D:\project\easy_agent\tests\test_v03.py      242D7A0CE55AA6FD42B5F89BAF25B9644C7819ED7FF15BD8F9DF92E00CBB7173
+False

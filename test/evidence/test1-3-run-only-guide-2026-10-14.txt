@@ -1,0 +1,24 @@
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+======================================================================
+ERROR: test_downstream_wait_does_not_extend_upstream_attempt (test_step1.Step1RuntimeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 64, in _callTestMethod
+    self._callMaybeAsync(method)
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 87, in _callMaybeAsync
+    return self._asyncioTestLoop.run_until_complete(fut)
+  File "D:\anaconda3\envs\common\lib\asyncio\base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 101, in _asyncioLoopRunner
+    ret = await awaitable
+  File "D:\project\easy_agent\tests\test_step1.py", line 718, in test_downstream_wait_does_not_extend_upstream_attempt
+    self.assertEqual((await graph.arun(Info("ok"))).text, "ok")
+  File "D:\project\easy_agent\easy_agent\graph.py", line 817, in arun
+    raise _safe_error(
+easy_agent.errors.NodeTimeoutError: ��ѡ����ύ������������ [run_id=fcf4a12afd58425886c5276af774c6bd]
+
+----------------------------------------------------------------------
+Ran 159 tests in 5.358s
+
+FAILED (errors=1)

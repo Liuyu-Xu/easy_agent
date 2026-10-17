@@ -1,0 +1,17 @@
+test_absolute_deadline_cancels_http_and_closes_client (test_api.ApiTests) ... ok
+test_child_task_cannot_reuse_parent_attempt (test_api.ApiTests) ... ok
+test_concurrent_graphs_keep_task_credentials_and_model_identity (test_api.ApiTests) ... ERROR
+test_endpoint_validation_and_full_path (test_api.ApiTests) ... ok
+test_external_cancellation_closes_http_client (test_api.ApiTests) ... ok
+test_graph_and_adapter_share_the_attempt_deadline (test_api.ApiTests) ... ok
+test_http_failures_and_redirects_are_sanitized_and_not_retried (test_api.ApiTests) ... ok
+test_invalid_json_is_sanitized (test_api.ApiTests) ... ok
+test_invalid_prompt_and_role_fail_at_declaration (test_api.ApiTests) ... ok
+test_invalid_usage_fields_are_not_reported_as_zero (test_api.ApiTests) ... ok
+test_json_input_is_deterministic_user_text (test_api.ApiTests) ... ok
+test_malformed_response_and_incomplete_content_never_publish (test_api.ApiTests) ... ok
+test_missing_key_fails_before_client_creation_but_validation_is_available (test_api.ApiTests) ... ok
+test_missing_usage_and_reported_model_are_unknown (test_api.ApiTests) ... ok
+test_provider_and_invalid_config_are_rejected (test_api.ApiTests) ... ok
+test_request_mapping_identity_provenance_and_secret_protection (test_api.ApiTests) ... ok
+test_simultaneous_done_failures_are_all_observed (test_api.ApiTests) ... 

@@ -1,0 +1,30 @@
+test_completion_order_and_delivery_order_agree (test_step1.Step1RuntimeTests) ... FAIL
+
+======================================================================
+FAIL: test_completion_order_and_delivery_order_agree (test_step1.Step1RuntimeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 64, in _callTestMethod
+    self._callMaybeAsync(method)
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 87, in _callMaybeAsync
+    return self._asyncioTestLoop.run_until_complete(fut)
+  File "D:\anaconda3\envs\common\lib\asyncio\base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 101, in _asyncioLoopRunner
+    ret = await awaitable
+  File "D:\project\easy_agent\tests\test_step1.py", line 757, in test_completion_order_and_delivery_order_agree
+    self.assertEqual(successes, deliveries)
+AssertionError: Lists differ: ['57fd473725b4494399e84bd782ea8010', '2f043972576e40a9be8bba53131dec7c'] != ['2f043972576e40a9be8bba53131dec7c', '57fd473725b4494399e84bd782ea8010']
+
+First differing element 0:
+'57fd473725b4494399e84bd782ea8010'
+'2f043972576e40a9be8bba53131dec7c'
+
+- ['57fd473725b4494399e84bd782ea8010', '2f043972576e40a9be8bba53131dec7c']
++ ['2f043972576e40a9be8bba53131dec7c', '57fd473725b4494399e84bd782ea8010']
+
+----------------------------------------------------------------------
+Ran 1 test in 0.054s
+
+FAILED (failures=1)
+EXPECTED: original runtime fails A03-012 under controlled set iteration.

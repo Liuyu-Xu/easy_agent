@@ -1,0 +1,76 @@
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+----------------------------------------------------------------------
+Ran 86 tests in 1.168s
+
+OK
+{
+  "status": "passed",
+  "round": "api-minimal-round2-python313",
+  "timestamp_utc": "2026-10-09T13:33:15.048113+00:00",
+  "python": "3.13.9",
+  "env_file": "D:\\code\\Python\\agent\\hello_agent\\test.env",
+  "request_count": 2,
+  "max_output_tokens_per_request": 32,
+  "max_attempts": 1,
+  "cases": [
+    {
+      "case": "sync_text",
+      "duration_seconds": 1.266,
+      "run_id": "18fa0db7330d49108f778a34aa69d991",
+      "output": "OK",
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 20,
+        "completion_tokens": 1,
+        "total_tokens": 21,
+        "reasoning_tokens": null
+      },
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true
+    },
+    {
+      "case": "async_json_input",
+      "duration_seconds": 0.921,
+      "run_id": "bd610a61ae644fd591c940945f7741c5",
+      "output": "7",
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 30,
+        "completion_tokens": 1,
+        "total_tokens": 31,
+        "reasoning_tokens": null
+      },
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true
+    }
+  ],
+  "source_sha256": {
+    "easy_agent/__init__.py": "1dadd6483facdcff13d0870bb2ac5f6dfb4d6e19a01505280b52ee7522f10745",
+    "easy_agent/_api.py": "e8f00125fc39efb99f1b7a6c58a25919ba6ef63c56cd2df7579d85b53f1423cb",
+    "easy_agent/_definition.py": "6e6d8045868848d91e4b17abef614f2c522e148a6adc6484a23dab06f0f28661",
+    "easy_agent/config.py": "2b95a547b75a733f77cd1ff6ca04620ad620fa23c9fb10d6816434d974625d6d",
+    "easy_agent/errors.py": "a751da8648d626b785817e2dfb5252537652164c4b36e76c8c48300b56c78daf",
+    "easy_agent/events.py": "6e3516a4332c48e7780e6ba0e1463eed20392ae4bf768041ad81fe118e0ca1db",
+    "easy_agent/graph.py": "b89aca6d7d25ea368b27b3c74ddbf4535de32e63bcc1113d9b4ec3e3a4dd44f7",
+    "easy_agent/info.py": "caff9340b541c76897721b87e3f1686a9dd774347a4aa6efe5507090e40e952d",
+    "easy_agent/node.py": "69f283669ad51865427270e455c49e913e03ae416da842cfdb22d17d85dbe19f",
+    "easy_agent/tools.py": "6789d979079ebd4b07b582ced37fdfb4ccfae67e22371b5fc1ca38f927a5bc99",
+    "tests/live_api.py": "eb939e702ecf2907c452c52e52d691c03c257efd13a2050cbd67c86578731f13",
+    "tests/run_api_round.py": "6fd5df2985f99202a4614404e0b4dc785857ba64ccf82da8ba3c32397b584d4c",
+    "tests/test_api.py": "7e18c4e64db14ddabd90810c22be4fec42c3ca40369005e04a1844ceb39aee02",
+    "tests/test_step1.py": "74978ca5bc7ff99c2a53f830d95a3e4d1873fa50261b1fe8e3b01aef16fadaed",
+    "tests/test_v01.py": "db0f7f19e1acf01c341b7a9f904a192c4044c49446a93cdcc268016c24369335",
+    "tests/test_v02.py": "ed6a0ed28ceaa76ae891f77672fc656869575fa02a48636dd449ade5359fc087",
+    "tests/test_v03.py": "c8c04ba02e24a7cbba0316cf614444098f4983db999b04e4f5b81edcc5ea344f",
+    "pyproject.toml": "3fcd180e382dbb90c026e8023a7f8c73e63a7a7acef4f32a57072c688db5a2e1"
+  }
+}

@@ -1,0 +1,372 @@
+    async def _run_plan(
+        self, plan: _Plan, initial_info: Info[Any], run_id: str
+    ) -> Info[Any]:
+        state = _RunState(graph=self, plan=plan, run_id=run_id)
+        for node_id, node_plan in plan.nodes.items():
+            state.node_semaphores[node_id] = asyncio.Semaphore(
+                node_plan.max_parallelism or plan.config.max_concurrency
+            )
+
+        ready: deque[_WorkItem] = deque(
+            [_WorkItem(node_id=plan.entry_id, info=initial_info)]
+        )
+
+        active: set[asyncio.Task[_Outcome]] = set()
+        task_nodes: dict[asyncio.Task[_Outcome], str] = {}
+        active_by_node: dict[str, int] = {node_id: 0 for node_id in plan.nodes}
+        run_limit = 1 if self._execution == "sequential" else plan.config.max_concurrency
+        try:
+            while ready or active:
+                queued = len(ready)
+                for _ in range(queued):
+                    if len(active) >= run_limit:
+                        break
+                    item = ready.popleft()
+                    node_plan = plan.nodes[item.node_id]
+                    node_limit = node_plan.max_parallelism or plan.config.max_concurrency
+                    if active_by_node[item.node_id] >= node_limit:
+                        ready.append(item)
+                        continue
+                    task = asyncio.create_task(self._execute_item(state, item))
+                    active.add(task)
+                    task_nodes[task] = item.node_id
+                    active_by_node[item.node_id] += 1
+                if not active:
+                    raise GraphValidationError(
+                        "存在就绪任务但没有可取得的执行名额", run_id=run_id
+                    )
+                done, _ = await asyncio.wait(
+                    active, return_when=asyncio.FIRST_COMPLETED
+                )
+                for task in done:
+                    active.remove(task)
+                    node_id = task_nodes.pop(task)
+                    active_by_node[node_id] -= 1
+                    outcome = task.result()
+                    await self._dispatch_outcome(state, outcome, ready)
+        finally:
+            if active:
+                for task in active:
+                    task.cancel()
+                await asyncio.gather(*active, return_exceptions=True)
+
+        if state.join_buffers:
+            waiting = [
+                {
+                    "node": plan.names_by_id[node_id],
+                    "branch_group": branch_group,
+                    "received": [plan.names_by_id[source] for source in values],
+                }
+                for (node_id, branch_group), values in state.join_buffers.items()
+            ]
+            raise GraphValidationError(
+                f"汇合输入不完整：{waiting}", run_id=run_id
+            )
+        if len(state.candidates) != 1:
+            raise ResultError(
+                f"运行必须产生一个结果候选，实际为 {len(state.candidates)} 个",
+                run_id=run_id,
+            )
+
+        terminal = state.candidates[0]
+        published = Info._runtime_info(
+            terminal.data,
+            schema_id=terminal.schema_id,
+            schema_version=terminal.schema_version,
+            labels=terminal.labels,
+            parent_ids=(terminal.id,),
+            origin_kind="graph_output",
+            run_id=run_id,
+            producer_node_id=None,
+            producer_execution_id=None,
+        )
+        self._event_store.append(
+            run_id,
+            "InfoPublished",
+            info_ids=[published.id, terminal.id],
+            cause_event_id=None,
+            data={
+                "content_hash": published.content_hash,
+                "schema_id": published.schema_id,
+            },
+        )
+        return published
+
+    async def _execute_item(self, state: _RunState, item: _WorkItem) -> _Outcome:
+        plan = state.plan
+        node_plan = plan.nodes[item.node_id]
+        node = node_plan.node
+        node_execution_id = uuid4().hex
+        span_id = node_execution_id
+        self._event_store.append(
+            state.run_id,
+            "NodeReady",
+            category="node",
+            span_id=span_id,
+            node_id=node.id,
+            node_execution_id=node_execution_id,
+            info_ids=[item.info.id],
+            delivery_id=item.delivery_id,
+            cause_event_id=item.cause_event_id,
+            data={"node_name": node_plan.name},
+        )
+        self._event_store.append(
+            state.run_id,
+            "NodeQueued",
+            category="node",
+            span_id=span_id,
+            node_id=node.id,
+            node_execution_id=node_execution_id,
+            info_ids=[item.info.id],
+            delivery_id=item.delivery_id,
+        )
+
+        self._validate_schema(
+            item.info, node_plan.input_schema, "输入", state.run_id
+        )
+        max_attempts = int(node_plan.effective_config.get("max_attempts") or 1)
+        timeout = node_plan.effective_config.get("timeout")
+
+        async with state.node_semaphores[node.id]:
+            last_error: Exception | None = None
+            for attempt in range(1, max_attempts + 1):
+                await state.consume_step()
+                started_at = monotonic()
+                started_event = self._event_store.append(
+                    state.run_id,
+                    "NodeAttemptStarted",
+                    category="node",
+                    span_id=span_id,
+                    node_id=node.id,
+                    node_execution_id=node_execution_id,
+                    attempt=attempt,
+                    info_ids=[item.info.id],
+                    delivery_id=item.delivery_id,
+                    data={"node_name": node_plan.name},
+                )
+                try:
+                    if inspect.iscoroutinefunction(node_plan.forward):
+                        call = node_plan.forward(item.info)
+                        if timeout is not None:
+                            async def preserve_node_timeout_error() -> Any:
+                                try:
+                                    return await call
+                                except (TimeoutError, asyncio.TimeoutError) as exc:
+                                    raise _ForwardRaisedTimeoutError(exc) from exc
+
+                            try:
+                                result = await asyncio.wait_for(
+                                    preserve_node_timeout_error(),
+                                    timeout=float(timeout),
+                                )
+                            except asyncio.TimeoutError as exc:
+                                raise _AttemptDeadlineExpired() from exc
+                        else:
+                            result = await call
+                    else:
+                        # The supervised Worker contract is still unresolved in
+                        # v0.3-issues.md. Synchronous calls therefore retain the
+                        # documented compatibility limitation for now.
+                        result = node_plan.forward(item.info)
+                    if not isinstance(result, Info):
+                        raise NodeExecutionError(
+                            f"节点 {node_plan.name} 的 forward() 必须返回 Info",
+                            run_id=state.run_id,
+                        )
+                    self._validate_schema(
+                        result, node_plan.output_schema, "输出", state.run_id
+                    )
+                    output = self._formalize_output(
+                        input_info=item.info,
+                        returned=result,
+                        run_id=state.run_id,
+                        node_id=node.id,
+                        node_execution_id=node_execution_id,
+                    )
+                    if output is not item.info:
+                        self._event_store.append(
+                            state.run_id,
+                            "InfoProduced",
+                            category="node",
+                            span_id=span_id,
+                            node_id=node.id,
+                            node_execution_id=node_execution_id,
+                            attempt=attempt,
+                            info_ids=[output.id, item.info.id],
+                            cause_event_id=started_event["event_id"],
+                            data={
+                                "content_hash": output.content_hash,
+                                "schema_id": output.schema_id,
+                            },
+                        )
+                    succeeded = self._event_store.append(
+                        state.run_id,
+                        "NodeSucceeded",
+                        category="node",
+                        span_id=span_id,
+                        node_id=node.id,
+                        node_execution_id=node_execution_id,
+                        attempt=attempt,
+                        info_ids=[output.id],
+                        cause_event_id=started_event["event_id"],
+                        data={
+                            "duration_ms": round(
+                                (monotonic() - started_at) * 1000, 3
+                            )
+                        },
+                    )
+                    return _Outcome(
+                        item=item,
+                        node_plan=node_plan,
+                        output=output,
+                        node_execution_id=node_execution_id,
+                        event_id=succeeded["event_id"],
+                    )
+                except _AttemptDeadlineExpired as exc:
+                    duration_ms = round((monotonic() - started_at) * 1000, 3)
+                    self._event_store.append(
+                        state.run_id,
+                        "NodeTimedOut",
+                        category="node",
+                        span_id=span_id,
+                        node_id=node.id,
+                        node_execution_id=node_execution_id,
+                        attempt=attempt,
+                        info_ids=[item.info.id],
+                        data={
+                            "timeout_seconds": float(timeout),
+                            "duration_ms": duration_ms,
+                        },
+                    )
+                    raise NodeTimeoutError(
+                        f"节点 {node_plan.name} 第 {attempt} 次尝试超过 "
+                        f"{float(timeout):g} 秒；本次 Graph 运行停止",
+                        run_id=state.run_id,
+                    ) from exc
+                except asyncio.CancelledError:
+                    self._event_store.append(
+                        state.run_id,
+                        "NodeCancelled",
+                        category="node",
+                        span_id=span_id,
+                        node_id=node.id,
+                        node_execution_id=node_execution_id,
+                        attempt=attempt,
+                        info_ids=[item.info.id],
+                        data={
+                            "duration_ms": round(
+                                (monotonic() - started_at) * 1000, 3
+                            )
+                        },
+                    )
+                    raise
+                except Exception as exc:
+                    if isinstance(exc, _ForwardRaisedTimeoutError):
+                        exc = exc.original
+                    last_error = exc
+                    # v0.3 only permits adapter-classified transient failures to
+                    # retry. No public adapter error contract is finalized yet,
+                    # so arbitrary business exceptions are never guessed retryable.
+                    retryable = False
+                    if attempt < max_attempts and retryable:
+                        self._event_store.append(
+                            state.run_id,
+                            "NodeRetrying",
+                            category="node",
+                            span_id=span_id,
+                            node_id=node.id,
+                            node_execution_id=node_execution_id,
+                            attempt=attempt,
+                            info_ids=[item.info.id],
+                            data={
+                                "error_type": type(exc).__name__,
+                                "duration_ms": round(
+                                    (monotonic() - started_at) * 1000, 3
+                                ),
+                            },
+                        )
+                        continue
+                    self._event_store.append(
+                        state.run_id,
+                        "NodeFailed",
+                        category="node",
+                        span_id=span_id,
+                        node_id=node.id,
+                        node_execution_id=node_execution_id,
+                        attempt=attempt,
+                        info_ids=[item.info.id],
+                        data={
+                            "error_type": type(exc).__name__,
+                            "duration_ms": round(
+                                (monotonic() - started_at) * 1000, 3
+                            ),
+                        },
+                    )
+                    if isinstance(exc, EasyAgentError):
+                        if exc.run_id is None:
+                            exc.run_id = state.run_id
+                        raise
+                    raise NodeExecutionError(
+                        f"节点 {node_plan.name} 执行失败：{exc}",
+                        run_id=state.run_id,
+                    ) from exc
+            assert last_error is not None
+            raise last_error
+
+    def _formalize_output(
+        self,
+        *,
+        input_info: Info[Any],
+        returned: Info[Any],
+        run_id: str,
+        node_id: str,
+        node_execution_id: str,
+    ) -> Info[Any]:
+        if returned is input_info:
+            return input_info
+        return Info._runtime_info(
+            returned.data,
+            schema_id=returned.schema_id,
+            schema_version=returned.schema_version,
+            labels=returned.labels,
+            parent_ids=(input_info.id,),
+            origin_kind="node_output",
+            run_id=run_id,
+            producer_node_id=node_id,
+            producer_execution_id=node_execution_id,
+        )
+
+    def _validate_schema(
+        self,
+        info: Info[Any],
+        schema: type | None,
+        direction: str,
+        run_id: str,
+    ) -> None:
+        if schema is None:
+            return
+        data = info.data
+        model_validate = getattr(schema, "model_validate", None)
+        model_json_schema = getattr(schema, "model_json_schema", None)
+        if callable(model_validate) and callable(model_json_schema):
+            try:
+                model_validate(plain_data(info), strict=True)
+            except Exception as exc:
+                raise InfoError(
+                    f"{direction}数据不符合 Pydantic 模型 {schema.__name__}",
+                    run_id=run_id,
+                ) from exc
+            return
+        if schema is dict:
+            valid = isinstance(data, Mapping)
+        elif schema is list:
+            valid = isinstance(data, tuple)
+        elif schema in {str, int, float, bool}:
+            valid = type(data) is schema
+        else:
+            valid = isinstance(data, schema)
+        if not valid:
+            raise InfoError(
+                f"{direction}数据不符合 {schema.__name__}，实际为 {type(data).__name__}",
+                run_id=run_id,
+            )

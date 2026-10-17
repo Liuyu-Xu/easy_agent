@@ -1,0 +1,528 @@
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+----------------------------------------------------------------------
+Ran 204 tests in 7.243s
+
+OK
+{
+  "status": "passed",
+  "round": "test1-5-common-r5-2026-10-17",
+  "python": "3.10.20",
+  "python_executable": "D:\\anaconda3\\envs\\common\\python.exe",
+  "python_environment": "D:\\anaconda3\\envs\\common",
+  "env_file": "D:\\code\\Python\\agent\\hello_agent\\test.env",
+  "planned_request_count": 19,
+  "request_count": 19,
+  "request_count_basis": "ModelRequestStarted events",
+  "max_output_tokens_per_request": 128,
+  "max_attempts": 1,
+  "cases": [
+    {
+      "case": "test_01_api",
+      "status": "passed",
+      "planned_requests": 1,
+      "run_id": "7f3c3d6cb3b74ffb9c3e46d10eb02916",
+      "output": [
+        "API_TEST_OK"
+      ],
+      "request_count": 1,
+      "models": [
+        {
+          "node_id": "0652267ef6784acba163642393a8b5e5",
+          "node_name": "answer",
+          "max_output_tokens": 32,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 20,
+            "completion_tokens": 3,
+            "total_tokens": 23,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 20,
+        "completion_tokens": 3,
+        "total_tokens": 23,
+        "reasoning_tokens": null
+      },
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 1,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "duration_seconds": 1.016
+    },
+    {
+      "case": "one_to_one",
+      "status": "passed",
+      "planned_requests": 2,
+      "run_id": "b92beca3375a4497bde66676ca99074d",
+      "output": [
+        "3"
+      ],
+      "request_count": 2,
+      "models": [
+        {
+          "node_id": "75f9083f33c947e8a672a70c8cfec2c6",
+          "node_name": "node_75f9083f33c947e8a672a70c8cfec2c6",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "b60bc4298b394fddadb6c8e7ca356e79",
+          "node_name": "node_b60bc4298b394fddadb6c8e7ca356e79",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 2,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "start_count": 1,
+      "end_count": 1,
+      "join_count": 0,
+      "unique_join_info_count": 0,
+      "shared_join_info_verified": false,
+      "hub_count": 0,
+      "hub_port_mapping_verified": false,
+      "message_delivery_verified": true,
+      "start_input_mapping_verified": true,
+      "end_order_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 1.797
+    },
+    {
+      "case": "many_to_one",
+      "status": "passed",
+      "planned_requests": 3,
+      "run_id": "0c732c05964c43e9af7f821f4076351b",
+      "output": [
+        "6"
+      ],
+      "request_count": 3,
+      "models": [
+        {
+          "node_id": "b0092f21b57d4e099fd1c8d044190165",
+          "node_name": "node_b0092f21b57d4e099fd1c8d044190165",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "eabaf27cde8e4ceab2362589bb172bd4",
+          "node_name": "node_eabaf27cde8e4ceab2362589bb172bd4",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "59076b616c304dc59a592283895438b3",
+          "node_name": "node_59076b616c304dc59a592283895438b3",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 78,
+            "completion_tokens": 1,
+            "total_tokens": 79,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 3,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "start_count": 2,
+      "end_count": 1,
+      "join_count": 1,
+      "unique_join_info_count": 1,
+      "shared_join_info_verified": false,
+      "hub_count": 0,
+      "hub_port_mapping_verified": false,
+      "message_delivery_verified": true,
+      "start_input_mapping_verified": true,
+      "end_order_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 1.656
+    },
+    {
+      "case": "one_to_many",
+      "status": "passed",
+      "planned_requests": 3,
+      "run_id": "84c0e4fe466a4996977a92523727ca5c",
+      "output": [
+        "4",
+        "3"
+      ],
+      "request_count": 3,
+      "models": [
+        {
+          "node_id": "7ed65bb5df8649abbf668fd11d9e9bc9",
+          "node_name": "node_7ed65bb5df8649abbf668fd11d9e9bc9",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "2593f32e216547c7a9d3de45cc49a89d",
+          "node_name": "node_2593f32e216547c7a9d3de45cc49a89d",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "cfa86d61e6f24413b249a581cb7a311b",
+          "node_name": "node_cfa86d61e6f24413b249a581cb7a311b",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 3,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "start_count": 1,
+      "end_count": 2,
+      "join_count": 0,
+      "unique_join_info_count": 0,
+      "shared_join_info_verified": false,
+      "hub_count": 0,
+      "hub_port_mapping_verified": false,
+      "message_delivery_verified": true,
+      "start_input_mapping_verified": true,
+      "end_order_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 1.719
+    },
+    {
+      "case": "many_to_many",
+      "status": "passed",
+      "planned_requests": 4,
+      "run_id": "146c872407b24f66bab1cfe80505e637",
+      "output": [
+        "8",
+        "6"
+      ],
+      "request_count": 4,
+      "models": [
+        {
+          "node_id": "a22bd8d5a1df4887b180071fe2f4100f",
+          "node_name": "node_a22bd8d5a1df4887b180071fe2f4100f",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "bb27537e08ef468780e5af01a427dfb4",
+          "node_name": "node_bb27537e08ef468780e5af01a427dfb4",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "e77ae1c76b1c45348fe3d34539cac4f1",
+          "node_name": "node_e77ae1c76b1c45348fe3d34539cac4f1",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 79,
+            "completion_tokens": 1,
+            "total_tokens": 80,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "3525efd3d21740b8b3d2272b0daab87f",
+          "node_name": "node_3525efd3d21740b8b3d2272b0daab87f",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 79,
+            "completion_tokens": 1,
+            "total_tokens": 80,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 4,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "start_count": 2,
+      "end_count": 2,
+      "join_count": 2,
+      "unique_join_info_count": 1,
+      "shared_join_info_verified": true,
+      "hub_count": 0,
+      "hub_port_mapping_verified": false,
+      "message_delivery_verified": true,
+      "start_input_mapping_verified": true,
+      "end_order_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 2.14
+    },
+    {
+      "case": "hub_many_to_many",
+      "status": "passed",
+      "planned_requests": 5,
+      "run_id": "d7a38336f0ff4a9692f10cdf19cb4571",
+      "output": [
+        "9",
+        "7"
+      ],
+      "request_count": 5,
+      "models": [
+        {
+          "node_id": "c4664bcd586c4766bc34dbaf734f936b",
+          "node_name": "node_c4664bcd586c4766bc34dbaf734f936b",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "382b85b350f44b31879e6b124c19a789",
+          "node_name": "node_382b85b350f44b31879e6b124c19a789",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "6373b8462f814584b343afff459460c8",
+          "node_name": "node_6373b8462f814584b343afff459460c8",
+          "max_output_tokens": 128,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 186,
+            "completion_tokens": 13,
+            "total_tokens": 199,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "6c16336174c74502b9b80374d6b88445",
+          "node_name": "node_6c16336174c74502b9b80374d6b88445",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "4ff4188789c04372811d52874d7c1691",
+          "node_name": "node_4ff4188789c04372811d52874d7c1691",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 5,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "start_count": 2,
+      "end_count": 2,
+      "join_count": 1,
+      "unique_join_info_count": 1,
+      "shared_join_info_verified": false,
+      "hub_count": 1,
+      "hub_port_mapping_verified": true,
+      "message_delivery_verified": true,
+      "start_input_mapping_verified": true,
+      "end_order_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 2.266
+    },
+    {
+      "case": "async_json_input",
+      "status": "passed",
+      "planned_requests": 1,
+      "run_id": "b218bee988af4b4aba81880302e4d1d9",
+      "output": [
+        "7"
+      ],
+      "request_count": 1,
+      "models": [
+        {
+          "node_id": "7082519549f64662a3348f33870573ca",
+          "node_name": "llm",
+          "max_output_tokens": 32,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 30,
+            "completion_tokens": 1,
+            "total_tokens": 31,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 30,
+        "completion_tokens": 1,
+        "total_tokens": 31,
+        "reasoning_tokens": null
+      },
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 1,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "duration_seconds": 0.641
+    }
+  ],
+  "source_sha256": {
+    "easy_agent/__init__.py": "29e1038ea5cfea5e18cb437bb91c61c75ec7ec7728d6a94e176e34bfb9e95a55",
+    "easy_agent/_api.py": "95cd2ad94b1d00c4f36ca178ed63d534ada6d8355fd1c2e8ff19c2370974e1ec",
+    "easy_agent/_definition.py": "d6ec011b322074ef0e729aa18d6b99151c4e3ea5721f560fee0f7363547c8908",
+    "easy_agent/config.py": "8c12f01daf3d396a5894e61cf758e48c24f4e413e59ba01b68372b6d5293e3e2",
+    "easy_agent/errors.py": "91e816f9a1f63f68d843d69f0230fde5fc0ea4e94b9b795d5bcd26c76a4fde3c",
+    "easy_agent/events.py": "56fc1e916686a7f36ebe52ca16c0abe4ea772e3a5b718ea695fa45c1d654d64c",
+    "easy_agent/graph.py": "b26918accc9f61403bb43f1bf54bcdba7fd4e0bc94798773b27083008e956b93",
+    "easy_agent/hub.py": "607b971128dc6a7a495bcdaa5c3ed06a4c3d10207ba17035e3046ae198cc6277",
+    "easy_agent/info.py": "586af7e84601bc34f8314c01307ad77cd91f9ba051b1cdfd222bd298390d6268",
+    "easy_agent/node.py": "fef81bcecbfbf110803dc09eb8ce186414d691ab68f85a9594530a37e6ceca8d",
+    "easy_agent/tools.py": "f8b3cf9ffcb639845e9840e8affeb9fbad579c5c450bbe6048fea7dd213abba0",
+    "tests/api_support.py": "1bdca008891275d66b8db60904dd51f935214ffff7d74519b110079681da5d4a",
+    "tests/live_api.py": "9a42e926844a2fcbac5fccc8b116b3d9076353f53e2f08520ac41ef0176ef1b2",
+    "tests/run_api_round.py": "0aa2635b7eebb58a4d211bf2480386fe8c3874267ba66514e18ee844911b2282",
+    "tests/runtime_faults.py": "5c7d803ab55cb4bb42222e5095fa2e87e5470de2227a6e87444f5d2926ea494a",
+    "tests/test_api.py": "587233d6abee3440c67f14efa438e6583ed15b7b2e54c6fdab4b3e2b48a55dcd",
+    "tests/test_audit_cleanup.py": "bd86ecb3cfde880591884659325cdc20927de243ce61b78f1c1385f0bb6d1e1e",
+    "tests/test_boundaries.py": "d462f48ea42a18aedb5e371a43df1940be09aa8e5833bad5f5b986554e5a07b9",
+    "tests/test_error_boundary.py": "41ae419a33b27d9fa2259087c951c6faa5a819395cf55ea3d2394acadd5ca380",
+    "tests/test_hub.py": "132ac088ceba60dd173153d86fa42e494d99abfea179acaf520a8768cd17133d",
+    "tests/test_involve.py": "4a0764c812ccb209655281459822fe6587d1913b49082e0bab2e516ac55ad18e",
+    "tests/test_live_evidence.py": "5f05f848a62dff95d140cd9754a65dfb5077bf8ccd718a36737282de357662d1",
+    "tests/test_step1.py": "4592e7417698f67b7e582d61c8b56680b08ae5cdd55fec8b93559f2fc295a23d",
+    "tests/test_user_surface.py": "97d000e72e0ad08e01eea78bf8c605aedf0ae18ac65292aab184b90c80a2b058",
+    "tests/test_v01.py": "1665e609a57a46c9182775a1b21cb7deb4f1868effdf7aec0b0a088d6344261e",
+    "tests/test_v02.py": "b8c046dd0cc0c6993973130f0eb4231ff298371833dff306b9c7890a0ffe6443",
+    "tests/test_v03.py": "972322e28abecf71d6979ca385f0bd84ea4ceff45886e745dead270c8f31dd7b",
+    "test/__init__.py": "de8356c9f64c5b47f4301d4db65bcffdaef0375ef8e5c0e712661008f5387014",
+    "test/test1_1.py": "4193d7cccec4cfcc3d6a2ecd8839548c9249bf98ad6df03328775c773ae990c6",
+    "test/test1_2.py": "b820370e5d2238ca859f9e70a08cb5d73e2d4f7b349a4f1c619f4775ee80d935",
+    "test/test1_3.py": "e3553a25fbef7252956a5c530a61dc619b9f15f1de6ae857b9eaba551b84ff5a",
+    "test/test1_4.py": "cf8d2abfd1c7a8d398008d3ec3384e8c029be09e7dee9d3997e72e8a70005c48",
+    "test/test1_5.py": "dbda93a8143e2acd9dc36572e870637ae202ed4fe1c8c699ba3e59193a135e16",
+    "test/test_01_api.py": "0fc220637d124d069c37a036b2b2cd3ecc7475da3622c18291e9bf5b22118d05",
+    "test/test_02_chain.py": "c69ece58b2a7e5ca15b4debb9b5ba86488d84e6f5a638165184d12215bd9d631",
+    "pyproject.toml": "3fcd180e382dbb90c026e8023a7f8c73e63a7a7acef4f32a57072c688db5a2e1"
+  },
+  "timestamp_utc": "2026-10-17T03:29:53.933194+00:00"
+}

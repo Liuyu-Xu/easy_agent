@@ -1,0 +1,18 @@
+{
+  "source_files_verified": 30,
+  "source_mismatches": [],
+  "core_modules": 10,
+  "core_lines_before": 3637,
+  "core_lines_after": 3602,
+  "identical_function_bodies": [],
+  "dataclass_fields_without_attribute_reads": [],
+  "single_sync_function": true,
+  "selected_model_key_scan": {
+    "files": 1235,
+    "matched_files": 0
+  },
+  "scope": "Static checks supplement behavior tests; open issues remain documented.",
+  "local_links_verified": 93,
+  "broken_local_links": [],
+  "status": "passed"
+}

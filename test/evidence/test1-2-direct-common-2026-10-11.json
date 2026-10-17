@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "python_executable": "D:\\anaconda3\\envs\\common\\python.exe",
+  "script": "D:\\project\\easy_agent\\test\\test1_2.py",
+  "cwd": "D:\\project\\easy_agent\\test",
+  "no_script_arguments": true,
+  "planned_request_count": 2,
+  "request_count": 2,
+  "script_sha256": "4cf4cd7f7910cf6927035f5331430151d830f8d3af9f0eb50a6df58c9341c392",
+  "duration_seconds": 2.36,
+  "exit_code": 0,
+  "process_exited": true,
+  "run_id": "ef75a4034ee643a9b78b394b1ab62909",
+  "event_log": "test/.easy_agent/logs/ef75a4034ee643a9b78b394b1ab62909.jsonl",
+  "secret_absent_from_events_and_console": true,
+  "models": [
+    {
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 21,
+        "completion_tokens": 3,
+        "total_tokens": 24,
+        "reasoning_tokens": null
+      }
+    },
+    {
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 39,
+        "completion_tokens": 5,
+        "total_tokens": 44,
+        "reasoning_tokens": null
+      }
+    }
+  ],
+  "total_tokens": 68,
+  "output": "TEST1_2_OK",
+  "timestamp_utc": "2026-10-11T15:39:35.962589+00:00"
+}

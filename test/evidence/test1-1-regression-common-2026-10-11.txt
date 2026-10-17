@@ -1,0 +1,39 @@
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+======================================================================
+ERROR: test_downstream_wait_does_not_extend_upstream_attempt (test_step1.Step1RuntimeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1197, in _commit_outcome
+    self._check_deadline(outcome.deadline)
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1187, in _check_deadline
+    raise _AttemptDeadlineExpired()
+easy_agent.graph._AttemptDeadlineExpired
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 64, in _callTestMethod
+    self._callMaybeAsync(method)
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 87, in _callMaybeAsync
+    return self._asyncioTestLoop.run_until_complete(fut)
+  File "D:\anaconda3\envs\common\lib\asyncio\base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 101, in _asyncioLoopRunner
+    ret = await awaitable
+  File "D:\project\easy_agent\tests\test_step1.py", line 718, in test_downstream_wait_does_not_extend_upstream_attempt
+    self.assertEqual((await graph.arun(Info("ok"))).text, "ok")
+  File "D:\project\easy_agent\easy_agent\graph.py", line 809, in arun
+    output = await self._arun_frozen(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 891, in _arun_frozen
+    result = await self._run_plan(plan, info, run_id, state)
+  File "D:\project\easy_agent\easy_agent\graph.py", line 976, in _run_plan
+    outcome = self._commit_outcome(state, outcome, sequence)
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1207, in _commit_outcome
+    raise error from exc
+easy_agent.errors.NodeTimeoutError: ��ѡ����ύ������������
+
+----------------------------------------------------------------------
+Ran 111 tests in 3.846s
+
+FAILED (errors=1)

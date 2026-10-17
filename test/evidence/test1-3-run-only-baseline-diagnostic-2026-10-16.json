@@ -1,0 +1,17 @@
+{
+  "tests": 159,
+  "errors": [],
+  "failures": [],
+  "commit_observations": [
+    {
+      "node": "source",
+      "elapsed_ms": 0.0,
+      "remaining_ms": 10.0
+    },
+    {
+      "node": "target",
+      "elapsed_ms": 47.0,
+      "remaining_ms": 953.0
+    }
+  ]
+}

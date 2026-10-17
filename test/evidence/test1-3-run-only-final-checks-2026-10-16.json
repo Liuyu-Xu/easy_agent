@@ -1,0 +1,12 @@
+{
+  "source_files_checked": 30,
+  "source_fingerprint_mismatches": [],
+  "graph_result_removed": true,
+  "latest_result_record_removed": true,
+  "local_links_checked": 94,
+  "missing_local_links": [],
+  "live_status": "passed",
+  "request_count": 5,
+  "total_tokens": 152,
+  "source_unchanged_after_final_tests": true
+}

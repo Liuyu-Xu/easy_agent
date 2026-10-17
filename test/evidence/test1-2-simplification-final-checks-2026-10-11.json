@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "timestamp_utc": "2026-10-11T15:40:57.332955+00:00",
+  "source_files_match_evidence": 28,
+  "local_links_checked": 74,
+  "credential_scan_files": 1135,
+  "credential_values_absent": true,
+  "test1_2_business_statements": 6,
+  "test1_2_file_lines": 25,
+  "additional_api_requests": 0,
+  "actual_round_requests": 6
+}

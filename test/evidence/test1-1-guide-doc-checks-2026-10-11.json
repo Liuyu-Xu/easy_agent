@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "timestamp_utc": "2026-10-11T06:52:39.509441+00:00",
+  "scope": "document links, Python example syntax only, source fingerprints, credential protection",
+  "local_links_checked": 44,
+  "python_blocks_parsed_without_execution": 3,
+  "source_unchanged_from_test1_1": true,
+  "source_fingerprints_match": true,
+  "credential_scan_passed": true,
+  "credential_scan_file_count": 895,
+  "extra_live_requests": 0,
+  "document_sha256": {
+    "v0.3-test1-1-modification-guide.md": "011e961eada3780efa3a4d0668dba2bbc8ef6affe0a20a4075654a05e1d8849a",
+    "v0.3-test1-1-design-issues.md": "f925d790ebeaef5f240b5f19b3659123c82b42e55e45dba8e0174d4dcf4fd0c9",
+    "test/README.md": "0b01cbf4c676aac2212a699ea02cc73cea77061ab90e468cb339f2f1a447434a",
+    "v0.3.md": "e85610885f8b8510aa3163a2cad1a42ba16dafa0c2307da60e0b0e7cf09586bb"
+  }
+}

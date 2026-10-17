@@ -1,0 +1,7 @@
+{
+  "source_syntax": "passed",
+  "same_function_binding": true,
+  "base_tool_has_invoke": false,
+  "identical_function_bodies": [],
+  "source_file_count": 10
+}

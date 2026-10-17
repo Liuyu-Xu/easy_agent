@@ -1,0 +1,164 @@
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+----------------------------------------------------------------------
+Ran 111 tests in 3.568s
+
+OK
+{
+  "status": "passed",
+  "round": "test1-implementation-common-2026-10-10",
+  "python": "3.10.20",
+  "python_executable": "D:\\anaconda3\\envs\\common\\python.exe",
+  "python_environment": "D:\\anaconda3\\envs\\common",
+  "env_file": "D:\\code\\Python\\agent\\hello_agent\\test.env",
+  "planned_request_count": 4,
+  "request_count": 4,
+  "request_count_basis": "ModelRequestStarted events",
+  "max_output_tokens_per_request": 32,
+  "max_attempts": 1,
+  "cases": [
+    {
+      "case": "test_01_api",
+      "status": "passed",
+      "planned_requests": 1,
+      "run_id": "63f3bb9dfd144202af87c8ceda1304dd",
+      "output": "API_TEST_OK",
+      "request_count": 1,
+      "models": [
+        {
+          "node_id": "550118d041a54aad926c9e8936b032f7",
+          "node_name": "answer",
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 20,
+            "completion_tokens": 3,
+            "total_tokens": 23,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 20,
+        "completion_tokens": 3,
+        "total_tokens": 23,
+        "reasoning_tokens": null
+      },
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "duration_seconds": 0.578
+    },
+    {
+      "case": "test_02_chain",
+      "status": "passed",
+      "planned_requests": 2,
+      "run_id": "37c1cbe55f8f4c49adec5981b5dd9629",
+      "output": "CHAIN_B",
+      "request_count": 2,
+      "models": [
+        {
+          "node_id": "d83ccc71ffc44ad3b86076ec19e1eb4a",
+          "node_name": "first",
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 19,
+            "completion_tokens": 3,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          }
+        },
+        {
+          "node_id": "eaaf70e64ebc4f4d9bae04e86ce74bb8",
+          "node_name": "second",
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 35,
+            "completion_tokens": 3,
+            "total_tokens": 38,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "chain_delivery_verified": true,
+      "duration_seconds": 1.172
+    },
+    {
+      "case": "async_json_input",
+      "status": "passed",
+      "planned_requests": 1,
+      "run_id": "b965b32c7a4f4741b0ea2350a653db86",
+      "output": "7",
+      "request_count": 1,
+      "models": [
+        {
+          "node_id": "f551453cbf5a46648f52e66f94147b27",
+          "node_name": "llm",
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 30,
+            "completion_tokens": 1,
+            "total_tokens": 31,
+            "reasoning_tokens": null
+          }
+        }
+      ],
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 30,
+        "completion_tokens": 1,
+        "total_tokens": 31,
+        "reasoning_tokens": null
+      },
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "duration_seconds": 0.469
+    }
+  ],
+  "source_sha256": {
+    "easy_agent/__init__.py": "1dadd6483facdcff13d0870bb2ac5f6dfb4d6e19a01505280b52ee7522f10745",
+    "easy_agent/_api.py": "e8f00125fc39efb99f1b7a6c58a25919ba6ef63c56cd2df7579d85b53f1423cb",
+    "easy_agent/_definition.py": "6e6d8045868848d91e4b17abef614f2c522e148a6adc6484a23dab06f0f28661",
+    "easy_agent/config.py": "c853b3c8587077cc688244fecaec0f6110ea49a822e8ee35cfe314920785d036",
+    "easy_agent/errors.py": "a751da8648d626b785817e2dfb5252537652164c4b36e76c8c48300b56c78daf",
+    "easy_agent/events.py": "6e3516a4332c48e7780e6ba0e1463eed20392ae4bf768041ad81fe118e0ca1db",
+    "easy_agent/graph.py": "d92bebe0f5877f7fb4f149a9e1623f129cf1ff5f406ccb112175e0e0ca4bbc30",
+    "easy_agent/info.py": "caff9340b541c76897721b87e3f1686a9dd774347a4aa6efe5507090e40e952d",
+    "easy_agent/node.py": "69f283669ad51865427270e455c49e913e03ae416da842cfdb22d17d85dbe19f",
+    "easy_agent/tools.py": "6789d979079ebd4b07b582ced37fdfb4ccfae67e22371b5fc1ca38f927a5bc99",
+    "tests/api_support.py": "085b45ee06ea925d7051f692d94d0ac7810b57edbb28980b856a32b79b6fb494",
+    "tests/live_api.py": "9a46afb28d007a60c51171769ec265edad835e01765d1da3b0efdc0465035975",
+    "tests/run_api_round.py": "1a0f4e74b1d5cbe3ff3cd53317e7539630d53bcf36ae84b93f762000c7c4767f",
+    "tests/test_api.py": "7e18c4e64db14ddabd90810c22be4fec42c3ca40369005e04a1844ceb39aee02",
+    "tests/test_live_evidence.py": "0b503f0cdef3cc10773c567414c1e9208407700f3b4d7b95cd55758d7c753419",
+    "tests/test_step1.py": "74978ca5bc7ff99c2a53f830d95a3e4d1873fa50261b1fe8e3b01aef16fadaed",
+    "tests/test_user_surface.py": "db3a43fec43b79e21c6d423fbf0ac396bee298c8492f1d54c037ed13806b41c1",
+    "tests/test_v01.py": "db0f7f19e1acf01c341b7a9f904a192c4044c49446a93cdcc268016c24369335",
+    "tests/test_v02.py": "ed6a0ed28ceaa76ae891f77672fc656869575fa02a48636dd449ade5359fc087",
+    "tests/test_v03.py": "c8c04ba02e24a7cbba0316cf614444098f4983db999b04e4f5b81edcc5ea344f",
+    "test/__init__.py": "de8356c9f64c5b47f4301d4db65bcffdaef0375ef8e5c0e712661008f5387014",
+    "test/test_01_api.py": "42fb195b1cd72bc45501beaa5dfb99a644428a9ebf7f6be51d52ff519ef85562",
+    "test/test_02_chain.py": "8c8e4b712904d9dd2914453d29c7cf52aedcca15e1e748a3ff0acae6cf0651f4",
+    "pyproject.toml": "3fcd180e382dbb90c026e8023a7f8c73e63a7a7acef4f32a57072c688db5a2e1"
+  },
+  "timestamp_utc": "2026-10-10T13:08:15.035839+00:00"
+}

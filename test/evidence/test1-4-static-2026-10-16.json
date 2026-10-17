@@ -1,0 +1,8 @@
+{
+  "core_modules": 10,
+  "core_lines": 3583,
+  "unused_top_level_imports": [],
+  "duplicate_function_bodies": [],
+  "unread_dataclass_fields": [],
+  "source_scope": "Core static checks are supplementary; historical evidence is excluded from current runtime."
+}

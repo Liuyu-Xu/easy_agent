@@ -1,0 +1,24 @@
+Audit date: 2026-10-09 Asia/Shanghai
+Working directory: D:\project\easy_agent
+
+COMMAND: D:\anaconda3\envs\common\python.exe -B -m unittest discover -s tests -q
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+----------------------------------------------------------------------
+Ran 67 tests in 1.140s
+
+OK
+
+Exit code: 0
+
+COMMAND: D:\anaconda3\python.exe -B -m unittest discover -s tests -q
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+----------------------------------------------------------------------
+Ran 67 tests in 0.784s
+
+OK
+
+Exit code: 0
+
+The observation probe is excluded from normal unittest discovery. Its exit code 0 means observations were collected, not that the audited behavior is correct.

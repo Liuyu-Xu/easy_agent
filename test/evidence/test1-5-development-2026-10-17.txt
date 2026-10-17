@@ -1,0 +1,14 @@
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+======================================================================
+FAIL: test_repeated_terminal_output_requires_an_explicit_join (test_boundaries.BoundaryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_boundaries.py", line 78, in test_repeated_terminal_output_requires_an_explicit_join
+    with self.assertRaises(ResultError):
+AssertionError: ResultError not raised
+
+----------------------------------------------------------------------
+Ran 180 tests in 6.312s
+
+FAILED (failures=1)
