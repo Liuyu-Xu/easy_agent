@@ -1,0 +1,27 @@
+Exception in thread Thread-3 (_readerthread):
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\common\lib\threading.py", line 1016, in _bootstrap_inner
+    self.run()
+  File "D:\anaconda3\envs\common\lib\threading.py", line 953, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\anaconda3\envs\common\lib\subprocess.py", line 1515, in _readerthread
+    buffer.append(fh.read())
+  File "D:\anaconda3\envs\common\lib\codecs.py", line 322, in decode
+    (result, consumed) = self._buffer_decode(data, self.errors, final)
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xbd in position 1109: invalid start byte
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry 已弃用；请改用表示总机会数的 max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+======================================================================
+ERROR: test_no_argument_entry_fails_with_nonzero_exit_and_safe_default_traceback (test_error_boundary.ErrorBoundaryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_error_boundary.py", line 303, in test_no_argument_entry_fails_with_nonzero_exit_and_safe_default_traceback
+    self.assertIn("NodeExecutionError", completed.stderr)
+  File "D:\anaconda3\envs\common\lib\unittest\case.py", line 1109, in assertIn
+    if member not in container:
+TypeError: argument of type 'NoneType' is not iterable
+
+----------------------------------------------------------------------
+Ran 243 tests in 10.540s
+
+FAILED (errors=1)

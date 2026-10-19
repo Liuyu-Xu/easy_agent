@@ -10,12 +10,13 @@ import asyncio
 import inspect
 import json
 from time import perf_counter
-from typing import Any, Mapping, get_type_hints
+from typing import Any, Mapping
 
-from .errors import EasyAgentError
+from .errors import EasyAgentError, InfoError, UnsupportedFeatureError, _safe_error
 from .info import Info, plain_data
 from ._plan import _NodePlan, _ToolDescriptor
 from ._runtime import _RunState
+from ._json import load_object
 
 
 class _ToolArgumentError(Exception):
@@ -60,7 +61,7 @@ class _ToolCallMixin:
                 started, "invalid_arguments",
             )
         try:
-            value = await self._invoke_tool(state, descriptor, arguments)
+            value = await self._invoke_tool(state, descriptor, arguments, execution_id, attempt)
         except asyncio.CancelledError:
             raise
         except _ToolArgumentError:
@@ -95,6 +96,7 @@ class _ToolCallMixin:
                   "duration_ms": round((perf_counter() - started) * 1000, 3)},
         )
         return payload
+
     def _tool_failure(
         self, state: _RunState, node_plan: "_NodePlan", execution_id: str,
         attempt: int, call_id: Any, name: Any, started: float, reason: str,
@@ -110,65 +112,50 @@ class _ToolCallMixin:
         return json.dumps(
             {"error": reason}, ensure_ascii=False, separators=(",", ":")
         )
+
     @staticmethod
     def _parse_tool_arguments(raw: Any) -> dict[str, Any]:
-        if isinstance(raw, str):
-            try:
-                raw = json.loads(raw)
-            except (ValueError, RecursionError):
-                raise _ToolArgumentError() from None
-        if not isinstance(raw, Mapping) or any(
-            not isinstance(key, str) for key in raw
-        ):
-            raise _ToolArgumentError()
-        return dict(raw)
+        try:
+            return load_object(raw)
+        except (TypeError, ValueError, RecursionError):
+            raise _ToolArgumentError() from None
+
     async def _invoke_tool(
         self, state: _RunState, descriptor: "_ToolDescriptor",
-        arguments: dict[str, Any],
+        arguments: dict[str, Any], execution_id: str, attempt: int,
     ) -> Any:
         target = descriptor.callable
         if descriptor.kind == "tool":
             info = Info(arguments)
-            if inspect.iscoroutinefunction(target.forward):
-                return await target.forward(info)
-            return await asyncio.wrap_future(self._register_blocking_future(
-                state, self._blocking_pool(state).submit(target.forward, info)
-            ))
-        parameters = inspect.signature(target).parameters
-        missing = [
-            name for name, parameter in parameters.items()
-            if parameter.default is inspect.Parameter.empty
-            and name not in arguments
-        ]
-        unknown = [name for name in arguments if name not in parameters]
-        if missing or unknown:
-            raise _ToolArgumentError()
-        try:
-            hints = get_type_hints(target)
-        except (NameError, TypeError, ValueError):
-            # Postponed annotations that cannot be resolved are not guessed at;
-            # argument names are still validated strictly.
-            hints = {}
-        for name, value in arguments.items():
-            annotation = hints.get(name, inspect.Parameter.empty)
-            if annotation is inspect.Parameter.empty:
-                continue
-            if not self._value_matches(annotation, value):
+            try:
+                normalized = self._validate_schema(info, descriptor.input_schema, "输入", state.run_id)
+            except InfoError:
+                raise _ToolArgumentError() from None
+            if normalized.content_hash != info.content_hash:
+                raise _safe_error(UnsupportedFeatureError,
+                    "输入 Schema 改变了业务数据；派生 Info 来源协议尚未定稿"
+                )
+            args, kwargs = (info,), {}
+        else:
+            parameters = {p.name: p for p in descriptor.parameters}
+            if any(p.required and p.name not in arguments for p in descriptor.parameters):
                 raise _ToolArgumentError()
+            if any(name not in parameters or not parameters[name].accepts(value)
+                   for name, value in arguments.items()):
+                raise _ToolArgumentError()
+            args, kwargs = (), arguments
         if inspect.iscoroutinefunction(target):
-            return await target(**arguments)
-        return await asyncio.wrap_future(self._register_blocking_future(
-            state, self._blocking_pool(state).submit(target, **arguments)
-        ))
-    @staticmethod
-    def _value_matches(schema: Any, value: Any) -> bool:
-        if schema is dict:
-            return isinstance(value, Mapping)
-        if schema is list:
-            return isinstance(value, (list, tuple))
-        if schema in {str, int, float, bool}:
-            return type(value) is schema
-        try:
-            return isinstance(value, schema)
-        except TypeError:
-            return False
+            value = await target(*args, **kwargs)
+        else:
+            value = await asyncio.wrap_future(self._register_blocking_future(
+                state, self._blocking_pool(state).submit(target, *args, **kwargs),
+                execution_id=execution_id, attempt=attempt,
+            ))
+        if descriptor.kind == "tool":
+            if not isinstance(value, Info):
+                raise TypeError()
+            try:
+                value = self._validate_schema(value, descriptor.output_schema, "输出", state.run_id)
+            except InfoError:
+                raise ValueError() from None
+        return value

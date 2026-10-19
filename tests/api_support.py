@@ -59,11 +59,14 @@ def events_for(graph):
 
 def model_records(graph, events):
     names = {node.id: node.name for node in graph._nodes.values()}
-    finished = {event['node_execution_id']: event['data'] for event in events
+    def key(event):
+        return (event['node_execution_id'], event['attempt'], event['data'].get('round'))
+
+    finished = {key(event): event['data'] for event in events
                 if event['event_type'] == 'ModelRequestFinished'}
     return [{'node_id': event['node_id'], 'node_name': names[event['node_id']],
-             'max_output_tokens': event['data']['max_output_tokens'],
-             **finished.get(event['node_execution_id'], {})}
+             'attempt': event['attempt'], **event['data'],
+             **finished.get(key(event), {})}
             for event in events if event['event_type'] == 'ModelRequestStarted']
 
 

@@ -1,8 +1,7 @@
 """Compilation of graph definitions into an immutable execution plan.
 
-Plan analysis is pure: every function here reads the candidate definition and
-returns new data. Nothing is mutated except the plan under construction, and no
-business code runs during compilation.
+Compilation resolves configuration and tool declarations under the definition
+lock, then builds the plan. Business forward methods are not invoked here.
 """
 
 from __future__ import annotations
@@ -36,7 +35,7 @@ from ._plan import (
     _NodePlan,
     _Plan,
     _ToolDescriptor,
-    _function_spec,
+    _compile_function,
 )
 
 
@@ -102,34 +101,9 @@ class _CompilerMixin:
                     tool_name = tool.tool_name
                 elif inspect.isfunction(tool) or inspect.iscoroutinefunction(tool):
                     tool_name = getattr(tool, "__name__", None)
-                    signature = inspect.signature(tool)
                     if tool_name == "<lambda>":
                         raise _safe_error(GraphValidationError,
                             f"节点 {name} 的 lambda 工具必须通过显式适配器提供稳定名称"
-                        )
-                    variadic = [
-                        parameter.name
-                        for parameter in signature.parameters.values()
-                        if parameter.kind
-                        in {
-                            inspect.Parameter.VAR_POSITIONAL,
-                            inspect.Parameter.VAR_KEYWORD,
-                        }
-                    ]
-                    if variadic:
-                        raise _safe_error(UnsupportedFeatureError,
-                            f"函数工具 {tool_name or '<unnamed>'} 使用了首版不支持的"
-                            f"可变参数：{variadic}"
-                        )
-                    missing_annotations = [
-                        parameter.name
-                        for parameter in signature.parameters.values()
-                        if parameter.annotation is inspect.Parameter.empty
-                    ]
-                    if missing_annotations:
-                        raise _safe_error(GraphValidationError,
-                            f"函数工具 {tool_name or '<unnamed>'} 缺少参数类型标注："
-                            f"{missing_annotations}"
                         )
                 else:
                     raise _safe_error(UnsupportedFeatureError,
@@ -143,7 +117,7 @@ class _CompilerMixin:
                         f"节点 {name} 包含重名工具：{tool_name}"
                     )
                 tool_names.append(tool_name)
-                descriptor = self._describe_tool(tool)
+                descriptor = self._describe_tool(tool, internal=True)
                 self._check_tool_admission(descriptor, name)
                 tool_descriptors.append(descriptor)
             public_values[f"nodes.{name}.tools"] = ",".join(tool_names)
@@ -341,31 +315,47 @@ class _CompilerMixin:
                     if remaining[target] == 0:
                         ready.append(target)
         return result
-    def _describe_tool(self, tool: Any) -> _ToolDescriptor:
+    def _describe_tool(self, tool: Any, *, internal: bool = False) -> _ToolDescriptor:
         name = tool.tool_name if isinstance(tool, Tool) else tool.__name__
         effect = getattr(tool, "side_effect", False)
         if not isinstance(effect, bool):
             raise _safe_error(GraphValidationError, f"工具 {name} 的 side_effect 必须是 bool")
+        parameters = ()
         if isinstance(tool, Tool):
+            schema = {"type": "object"}
+            if internal and tool.input_schema not in {None, dict}:
+                try:
+                    if not callable(getattr(tool.input_schema, "model_validate", None)):
+                        raise ValueError()
+                    schema = tool.input_schema.model_json_schema()
+                    if schema.get("type") != "object":
+                        raise ValueError()
+                except Exception:
+                    raise _safe_error(UnsupportedFeatureError,
+                        f"内部工具 {name} 的输入 Schema 必须接受 JSON 对象"
+                    ) from None
             spec = {
                 "type": "function",
                 "function": {
                     "name": name,
                     "description": tool.description,
-                    "parameters": {"type": "object"},
+                    "parameters": schema,
                 },
             }
             kind = "tool"
         else:
-            spec = _function_spec(tool, name)
+            parameters, spec = _compile_function(tool, name)
             kind = "function"
         return _ToolDescriptor(
             name=name,
             required_permissions=frozenset(getattr(tool, "required_permissions", ())),
             side_effect=effect,
-            callable=tool,
+            callable=tool.forward if isinstance(tool, Tool) else tool,
             kind=kind,
             spec=spec,
+            parameters=parameters,
+            input_schema=tool.input_schema if isinstance(tool, Tool) else None,
+            output_schema=tool.output_schema if isinstance(tool, Tool) else None,
         )
     def _check_tool_admission(self, tool: _ToolDescriptor, node_name: str) -> None:
         if tool.name not in self._allowed_tools:
@@ -375,7 +365,7 @@ class _CompilerMixin:
             raise _safe_error(PermissionDeniedError, f"工具 {tool.name} 请求了未授权权限：{missing}")
         if tool.side_effect:
             raise _safe_error(UnsupportedFeatureError,
-                f"副作用工具 {tool.name} 的审批协议尚未在 v0.3.md 中具体定义"
+                f"副作用工具 {tool.name} 尚不支持；当前仅允许 side_effect=False 的工具"
             )
     def _resolve_start(
         self, nodes: Mapping[str, _NodePlan], incoming: Mapping[str, list[str]]

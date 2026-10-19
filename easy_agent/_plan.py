@@ -37,27 +37,35 @@ class _ToolDescriptor:
     callable: Any = field(default=None, compare=False)
     kind: str = "function"
     spec: Any = field(default=None, compare=False)
+    parameters: tuple[_ToolParameter, ...] = ()
+    input_schema: type | None = None
+    output_schema: type | None = None
 
 
-def _json_schema(annotation: Any, *, tool: str, parameter: str) -> dict[str, Any]:
-    """Map a supported annotation to JSON Schema; reject anything else."""
+@dataclass(frozen=True)
+class _ToolParameter:
+    name: str
+    value_type: type
+    nullable: bool
+    required: bool
 
-    if annotation in _JSON_TYPES:
-        return {"type": _JSON_TYPES[annotation]}
-    origin = get_origin(annotation)
-    if origin is UnionType or origin is Union:
-        arguments = get_args(annotation)
-        optional = [item for item in arguments if item is not type(None)]
-        if len(optional) == 1 and len(arguments) == 2:
-            return _json_schema(optional[0], tool=tool, parameter=parameter)
-    raise _safe_error(UnsupportedFeatureError,
-        f"函数工具 {tool} 的参数 {parameter} 使用了无法导出 JSON Schema 的类型；"
-        "首版仅支持 str/int/float/bool/list/dict 及其 Optional"
-    )
+    @property
+    def schema(self) -> dict[str, Any]:
+        kind = _JSON_TYPES[self.value_type]
+        return {"type": [kind, "null"] if self.nullable else kind}
+
+    def accepts(self, value: Any) -> bool:
+        if value is None:
+            return self.nullable
+        if self.value_type is float:
+            # JSON Schema number includes integers, but not booleans.
+            return type(value) in {int, float}
+        return type(value) is self.value_type
 
 
-def _function_parameters(tool: Any) -> dict[str, Any]:
-    name = getattr(tool, "__name__", "<unnamed>")
+def _compile_function(tool: Any, name: str) -> tuple[tuple[_ToolParameter, ...], dict]:
+    """Freeze one contract for both provider declarations and local calls."""
+
     try:
         hints = get_type_hints(tool)
     except (NameError, TypeError, ValueError):
@@ -65,34 +73,46 @@ def _function_parameters(tool: Any) -> dict[str, Any]:
             f"函数工具 {name} 的类型标注无法在运行前解析，请使用可解析的类型"
         ) from None
     signature = inspect.signature(tool)
-    properties: dict[str, Any] = {}
-    required: list[str] = []
+    parameters = []
     for parameter_name, parameter in signature.parameters.items():
+        if parameter.kind not in {
+            inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY,
+        }:
+            raise _safe_error(UnsupportedFeatureError,
+                f"函数工具 {name} 的参数 {parameter_name} 必须支持具名调用；"
+                "首版不支持位置专用参数和可变参数"
+            )
         annotation = hints.get(parameter_name, inspect.Parameter.empty)
         if annotation is inspect.Parameter.empty:
             raise _safe_error(GraphValidationError,
                 f"函数工具 {name} 的参数 {parameter_name} 缺少类型标注"
             )
-        properties[parameter_name] = _json_schema(
-            annotation, tool=name, parameter=parameter_name
-        )
-        if parameter.default is inspect.Parameter.empty:
-            required.append(parameter_name)
-    return {
-        "type": "object",
-        "properties": properties,
-        "required": required,
-        "additionalProperties": False,
-    }
-
-
-def _function_spec(tool: Any, name: str) -> dict[str, Any]:
-    return {
+        nullable = False
+        if get_origin(annotation) in {UnionType, Union}:
+            arguments = get_args(annotation)
+            optional = [item for item in arguments if item is not type(None)]
+            if len(optional) == 1 and len(arguments) == 2:
+                annotation, nullable = optional[0], True
+        if annotation not in _JSON_TYPES:
+            raise _safe_error(UnsupportedFeatureError,
+                f"函数工具 {name} 的参数 {parameter_name} 使用了无法导出 JSON Schema 的类型；"
+                "首版仅支持 str/int/float/bool/list/dict 及其 Optional"
+            )
+        parameters.append(_ToolParameter(
+            parameter_name, annotation, nullable,
+            parameter.default is inspect.Parameter.empty,
+        ))
+    return tuple(parameters), {
         "type": "function",
         "function": {
             "name": name,
             "description": inspect.getdoc(tool) or "",
-            "parameters": _function_parameters(tool),
+            "parameters": {
+                "type": "object",
+                "properties": {p.name: p.schema for p in parameters},
+                "required": [p.name for p in parameters if p.required],
+                "additionalProperties": False,
+            },
         },
     }
 

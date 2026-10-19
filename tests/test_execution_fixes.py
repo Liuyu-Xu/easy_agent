@@ -579,7 +579,7 @@ class ToolDeclarationTests(FixTestCase):
         with self.transport(handler):
             graph.run([Info("x")])
         parameters = requests[0]["tools"][0]["function"]["parameters"]
-        self.assertEqual(parameters["properties"]["times"], {"type": "integer"})
+        self.assertEqual(parameters["properties"]["times"], {"type": ["integer", "null"]})
         self.assertEqual(parameters["required"], ["name"])
 
     def test_unsupported_tool_annotation_is_rejected_before_running(self):

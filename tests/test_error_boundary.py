@@ -296,8 +296,9 @@ with patch("easy_agent.Graph", graph_factory), patch("easy_agent.Node", Fails), 
      patch("easy_agent.node.normalize_env_file", return_value=None):
     runpy.run_path(SCRIPT, run_name="__main__")
 """.replace("SCRIPT", repr(str(ROOT / "test/test1_3.py")))
-        completed = subprocess.run([sys.executable, "-B", "-c", code], cwd=self.root,
-                                   env=self.child_environment, capture_output=True, text=True, timeout=15)
+        completed = subprocess.run([sys.executable, "-X", "utf8", "-B", "-c", code], cwd=self.root,
+                                   env=self.child_environment, capture_output=True,
+                                   encoding="utf-8", timeout=15)
         self.assertNotEqual(completed.returncode, 0)
         self.assertEqual(completed.stdout, "")
         self.assertIn("NodeExecutionError", completed.stderr)

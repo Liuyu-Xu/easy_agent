@@ -1,0 +1,555 @@
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry �����ã�����ñ�ʾ�ܻ������� max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+----------------------------------------------------------------------
+Ran 228 tests in 10.031s
+
+OK
+{
+  "status": "passed",
+  "round": "review-2026-10-19",
+  "python": "3.10.20",
+  "python_executable": "D:\\anaconda3\\envs\\common\\python.exe",
+  "python_environment": "D:\\anaconda3\\envs\\common",
+  "env_file": "D:\\code\\Python\\agent\\hello_agent\\test.env",
+  "planned_request_count": 19,
+  "request_count": 19,
+  "request_count_basis": "ModelRequestStarted events",
+  "max_output_tokens_per_request": 128,
+  "max_attempts": 1,
+  "cases": [
+    {
+      "case": "test_01_api",
+      "status": "passed",
+      "planned_requests": 1,
+      "run_id": "874c16f1bc1542388c1e7d25c53e3c55",
+      "output": [
+        "API_TEST_OK"
+      ],
+      "request_count": 1,
+      "models": [
+        {
+          "node_id": "f76c2b67e68b4fb6a6be7b718c1991df",
+          "node_name": "answer",
+          "max_output_tokens": 32,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 20,
+            "completion_tokens": 3,
+            "total_tokens": 23,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        }
+      ],
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 20,
+        "completion_tokens": 3,
+        "total_tokens": 23,
+        "reasoning_tokens": null
+      },
+      "round": 1,
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 1,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "duration_seconds": 1.141
+    },
+    {
+      "case": "one_to_one",
+      "status": "passed",
+      "planned_requests": 2,
+      "run_id": "89eb4f2485304d50a662e206a1867985",
+      "output": [
+        "3"
+      ],
+      "request_count": 2,
+      "models": [
+        {
+          "node_id": "471013acaad6422e91e2f9d80effdaf1",
+          "node_name": "node_471013acaad6422e91e2f9d80effdaf1",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "027d5a7b7fff4ce4a64bd929e28ed96c",
+          "node_name": "node_027d5a7b7fff4ce4a64bd929e28ed96c",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 2,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "start_count": 1,
+      "end_count": 1,
+      "join_count": 0,
+      "unique_join_info_count": 0,
+      "shared_join_info_verified": false,
+      "hub_count": 0,
+      "hub_port_mapping_verified": false,
+      "message_delivery_verified": true,
+      "start_input_mapping_verified": true,
+      "end_order_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 1.125
+    },
+    {
+      "case": "many_to_one",
+      "status": "passed",
+      "planned_requests": 3,
+      "run_id": "47bd57d3fb5e4340897ad3910b13adae",
+      "output": [
+        "6"
+      ],
+      "request_count": 3,
+      "models": [
+        {
+          "node_id": "49d430c48f4a41ad8ce839af4b7f1774",
+          "node_name": "node_49d430c48f4a41ad8ce839af4b7f1774",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "8b18aa0a8a4c440e93e9156135636481",
+          "node_name": "node_8b18aa0a8a4c440e93e9156135636481",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "fa673272161e49ca831e222515799762",
+          "node_name": "node_fa673272161e49ca831e222515799762",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 82,
+            "completion_tokens": 1,
+            "total_tokens": 83,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 3,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "start_count": 2,
+      "end_count": 1,
+      "join_count": 1,
+      "unique_join_info_count": 1,
+      "shared_join_info_verified": false,
+      "hub_count": 0,
+      "hub_port_mapping_verified": false,
+      "message_delivery_verified": true,
+      "start_input_mapping_verified": true,
+      "end_order_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 1.796
+    },
+    {
+      "case": "one_to_many",
+      "status": "passed",
+      "planned_requests": 3,
+      "run_id": "830d8e69a56646e2bc2d40b682e09d86",
+      "output": [
+        "4",
+        "3"
+      ],
+      "request_count": 3,
+      "models": [
+        {
+          "node_id": "25e17fe5372449f5963eea9b34748bfb",
+          "node_name": "node_25e17fe5372449f5963eea9b34748bfb",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "687e7e23f60548de92e0314dca477eb8",
+          "node_name": "node_687e7e23f60548de92e0314dca477eb8",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "62f23819007848cd8bb351badff35e7b",
+          "node_name": "node_62f23819007848cd8bb351badff35e7b",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 3,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "start_count": 1,
+      "end_count": 2,
+      "join_count": 0,
+      "unique_join_info_count": 0,
+      "shared_join_info_verified": false,
+      "hub_count": 0,
+      "hub_port_mapping_verified": false,
+      "message_delivery_verified": true,
+      "start_input_mapping_verified": true,
+      "end_order_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 1.188
+    },
+    {
+      "case": "many_to_many",
+      "status": "passed",
+      "planned_requests": 4,
+      "run_id": "767a8daa68174f13986c0accec4f79dd",
+      "output": [
+        "8",
+        "6"
+      ],
+      "request_count": 4,
+      "models": [
+        {
+          "node_id": "efc1e80119204aca8cdbb9caa1c0ca7a",
+          "node_name": "node_efc1e80119204aca8cdbb9caa1c0ca7a",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "3f66d31cb3be4ba1aa9e153b1c22c413",
+          "node_name": "node_3f66d31cb3be4ba1aa9e153b1c22c413",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "4abb67d9291d41168cec790e0c2c90ea",
+          "node_name": "node_4abb67d9291d41168cec790e0c2c90ea",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 84,
+            "completion_tokens": 1,
+            "total_tokens": 85,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "7e936eec7e624a13ab3bb745efc1315a",
+          "node_name": "node_7e936eec7e624a13ab3bb745efc1315a",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 84,
+            "completion_tokens": 1,
+            "total_tokens": 85,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 4,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "start_count": 2,
+      "end_count": 2,
+      "join_count": 2,
+      "unique_join_info_count": 1,
+      "shared_join_info_verified": true,
+      "hub_count": 0,
+      "hub_port_mapping_verified": false,
+      "message_delivery_verified": true,
+      "start_input_mapping_verified": true,
+      "end_order_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 1.422
+    },
+    {
+      "case": "hub_many_to_many",
+      "status": "passed",
+      "planned_requests": 5,
+      "run_id": "dc93a01442ba43bfb6ad11d24b9284be",
+      "output": [
+        "9",
+        "7"
+      ],
+      "request_count": 5,
+      "models": [
+        {
+          "node_id": "d9c34cf831354db38e716eb5ce802fe3",
+          "node_name": "node_d9c34cf831354db38e716eb5ce802fe3",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "1504c9ad132c49faad6b8e0ab100b167",
+          "node_name": "node_1504c9ad132c49faad6b8e0ab100b167",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "bc9214d1af2e4b19b0efe715a6e3a130",
+          "node_name": "node_bc9214d1af2e4b19b0efe715a6e3a130",
+          "max_output_tokens": 128,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 186,
+            "completion_tokens": 13,
+            "total_tokens": 199,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "0abda72c6051474481b84d22f40e285a",
+          "node_name": "node_0abda72c6051474481b84d22f40e285a",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        },
+        {
+          "node_id": "4cf253f9d3494f4180d4a4177bcead43",
+          "node_name": "node_4cf253f9d3494f4180d4a4177bcead43",
+          "max_output_tokens": 16,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 21,
+            "completion_tokens": 1,
+            "total_tokens": 22,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        }
+      ],
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 5,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "start_count": 2,
+      "end_count": 2,
+      "join_count": 1,
+      "unique_join_info_count": 1,
+      "shared_join_info_verified": false,
+      "hub_count": 1,
+      "hub_port_mapping_verified": true,
+      "message_delivery_verified": true,
+      "start_input_mapping_verified": true,
+      "end_order_verified": true,
+      "node_configuration_verified": true,
+      "duration_seconds": 2.781
+    },
+    {
+      "case": "async_json_input",
+      "status": "passed",
+      "planned_requests": 1,
+      "run_id": "39845f8c29d84b1d8ebf80f799e38bdc",
+      "output": [
+        "7"
+      ],
+      "request_count": 1,
+      "models": [
+        {
+          "node_id": "eeb94e07b0a64ae2af77a3e4088d987e",
+          "node_name": "llm",
+          "max_output_tokens": 32,
+          "requested_model": "deepseek-flash",
+          "reported_model": "deepseek-flash",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 30,
+            "completion_tokens": 1,
+            "total_tokens": 31,
+            "reasoning_tokens": null
+          },
+          "round": 1
+        }
+      ],
+      "requested_model": "deepseek-flash",
+      "reported_model": "deepseek-flash",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 30,
+        "completion_tokens": 1,
+        "total_tokens": 31,
+        "reasoning_tokens": null
+      },
+      "round": 1,
+      "secret_source": "env_file",
+      "credential_matches_test_file": true,
+      "credential_reference_count": 1,
+      "secret_absent_from_logs_and_export": true,
+      "resources_exited": true,
+      "duration_seconds": 0.578
+    }
+  ],
+  "source_sha256": {
+    "easy_agent/__init__.py": "29e1038ea5cfea5e18cb437bb91c61c75ec7ec7728d6a94e176e34bfb9e95a55",
+    "easy_agent/_api.py": "fe6c70027c289ae4fa9cd9cd2d68121764d55d47ac3ed801d468358ffb6203ac",
+    "easy_agent/_blocking.py": "4454b5efab9dfa9cf8cf3a55798ad8a02dab87b74b3314db27a25d0c63c73fc2",
+    "easy_agent/_compiler.py": "a023bbefb95bd04ba8117baf48e08ffc33d7e1e45d755fa16a096e583087f500",
+    "easy_agent/_definition.py": "d6ec011b322074ef0e729aa18d6b99151c4e3ea5721f560fee0f7363547c8908",
+    "easy_agent/_plan.py": "bcbee91dcf294e4c7a27a6a5075399a3a978beda1726aada1f792aed1ce1db80",
+    "easy_agent/_runtime.py": "510316e6560a04be82071f2ffd1d002a4660f57d79d42c516492bda1233f887f",
+    "easy_agent/_toolcall.py": "117d7ffaa8fe735938a4545bd5a14f338ebe22f6efda13f80f853491f69507f2",
+    "easy_agent/config.py": "8c12f01daf3d396a5894e61cf758e48c24f4e413e59ba01b68372b6d5293e3e2",
+    "easy_agent/errors.py": "fa6f089a033a6d1977a317cc67177646cd1bd3d81bd6fba595e1b005ef7102a1",
+    "easy_agent/events.py": "56fc1e916686a7f36ebe52ca16c0abe4ea772e3a5b718ea695fa45c1d654d64c",
+    "easy_agent/graph.py": "ed12e3a2d3eaf94162d7577af1608f375950a9c4073abf3b2e5d172b17e0efc9",
+    "easy_agent/hub.py": "607b971128dc6a7a495bcdaa5c3ed06a4c3d10207ba17035e3046ae198cc6277",
+    "easy_agent/info.py": "586af7e84601bc34f8314c01307ad77cd91f9ba051b1cdfd222bd298390d6268",
+    "easy_agent/node.py": "0684ee68043c0ec660b5536e95a3899475e7846fcd70d4557ab1c5cea49b94bd",
+    "easy_agent/tools.py": "5035a0edd123a1ea2f2f36ee5e32310fd43ba8627e652fbac7bd0e8f1d9ef794",
+    "tests/api_support.py": "1bdca008891275d66b8db60904dd51f935214ffff7d74519b110079681da5d4a",
+    "tests/live_api.py": "9a42e926844a2fcbac5fccc8b116b3d9076353f53e2f08520ac41ef0176ef1b2",
+    "tests/run_api_round.py": "0aa2635b7eebb58a4d211bf2480386fe8c3874267ba66514e18ee844911b2282",
+    "tests/runtime_faults.py": "5c7d803ab55cb4bb42222e5095fa2e87e5470de2227a6e87444f5d2926ea494a",
+    "tests/test_api.py": "6bb1d5b183118372bcc5709b0904b077a82cf40a50cfe284e2d806071fbfe3f6",
+    "tests/test_audit_cleanup.py": "bd86ecb3cfde880591884659325cdc20927de243ce61b78f1c1385f0bb6d1e1e",
+    "tests/test_boundaries.py": "d462f48ea42a18aedb5e371a43df1940be09aa8e5833bad5f5b986554e5a07b9",
+    "tests/test_error_boundary.py": "41ae419a33b27d9fa2259087c951c6faa5a819395cf55ea3d2394acadd5ca380",
+    "tests/test_execution_fixes.py": "c60e65777a008d1e5c5bde65ca4067f1f08a249b671cfad6757249d4cbb94be9",
+    "tests/test_hub.py": "132ac088ceba60dd173153d86fa42e494d99abfea179acaf520a8768cd17133d",
+    "tests/test_involve.py": "4a0764c812ccb209655281459822fe6587d1913b49082e0bab2e516ac55ad18e",
+    "tests/test_live_evidence.py": "5f05f848a62dff95d140cd9754a65dfb5077bf8ccd718a36737282de357662d1",
+    "tests/test_step1.py": "35f987e630eb2e9fc583913c88c2fe225e4b2bebf1830b0a6b373a298d8b04e2",
+    "tests/test_user_surface.py": "97d000e72e0ad08e01eea78bf8c605aedf0ae18ac65292aab184b90c80a2b058",
+    "tests/test_v01.py": "1665e609a57a46c9182775a1b21cb7deb4f1868effdf7aec0b0a088d6344261e",
+    "tests/test_v02.py": "b8c046dd0cc0c6993973130f0eb4231ff298371833dff306b9c7890a0ffe6443",
+    "tests/test_v03.py": "972322e28abecf71d6979ca385f0bd84ea4ceff45886e745dead270c8f31dd7b",
+    "test/__init__.py": "de8356c9f64c5b47f4301d4db65bcffdaef0375ef8e5c0e712661008f5387014",
+    "test/test1_1.py": "4193d7cccec4cfcc3d6a2ecd8839548c9249bf98ad6df03328775c773ae990c6",
+    "test/test1_2.py": "b820370e5d2238ca859f9e70a08cb5d73e2d4f7b349a4f1c619f4775ee80d935",
+    "test/test1_3.py": "e3553a25fbef7252956a5c530a61dc619b9f15f1de6ae857b9eaba551b84ff5a",
+    "test/test1_4.py": "cf8d2abfd1c7a8d398008d3ec3384e8c029be09e7dee9d3997e72e8a70005c48",
+    "test/test1_5.py": "dbda93a8143e2acd9dc36572e870637ae202ed4fe1c8c699ba3e59193a135e16",
+    "test/test_01_api.py": "0fc220637d124d069c37a036b2b2cd3ecc7475da3622c18291e9bf5b22118d05",
+    "test/test_02_chain.py": "c69ece58b2a7e5ca15b4debb9b5ba86488d84e6f5a638165184d12215bd9d631",
+    "pyproject.toml": "3fcd180e382dbb90c026e8023a7f8c73e63a7a7acef4f32a57072c688db5a2e1"
+  },
+  "timestamp_utc": "2026-10-19T14:08:04.729922+00:00"
+}

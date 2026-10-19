@@ -721,8 +721,7 @@ class Graph(_CompilerMixin, _ToolCallMixin):
         try:
             if self._execution in {"multiprocess", "hybrid", "auto"}:
                 raise _safe_error(UnsupportedFeatureError,
-                    f"execution={self._execution!r} 的 Worker 与清理参数尚未定稿；"
-                    "详见 v0.3-issues.md"
+                    f"execution={self._execution!r} 尚不支持；当前仅支持 sequential 和 async"
                 )
             tools = self._begin_run()
             try:
@@ -865,14 +864,20 @@ class Graph(_CompilerMixin, _ToolCallMixin):
                     active.add(task)
                     task_nodes[task] = item.node_id
                     active_by_node[item.node_id] += 1
-                if not active:
-                    if state.delayed:
-                        await self._sleep_until_next_retry(state)
-                        continue
+                if not active and not state.delayed:
                     raise _safe_error(GraphValidationError,
                         "存在就绪任务但没有可取得的执行名额", run_id=run_id
                     )
-                sequence, task = await state.completions.get()
+                # A due retry must wake the coordinator even while another
+                # branch is active. Waiting never occupies a business slot.
+                delay = (
+                    max(0.0, min(entry.ready_at for entry in state.delayed) - perf_counter())
+                    if state.delayed else None
+                )
+                try:
+                    sequence, task = await asyncio.wait_for(state.completions.get(), timeout=delay)
+                except asyncio.TimeoutError:
+                    continue
                 active.remove(task)
                 node_id = task_nodes.pop(task)
                 active_by_node[node_id] -= 1
@@ -904,10 +909,11 @@ class Graph(_CompilerMixin, _ToolCallMixin):
                     state.owned_tasks.discard(task)
                     state.cancel_requested.discard(task)
             pending = {task for task in state.owned_tasks if not task.done()}
-            blocked = {
-                key for key, future in state.blocking_futures.items()
-                if not future.done()
-            }
+            with self._definition_lock:
+                blocked = {
+                    key for key, future in state.blocking_futures.items()
+                    if not future.done()
+                }
             if pending or blocked:
                 self._retain_cleanup(state)
                 for task in pending:
@@ -1021,7 +1027,9 @@ class Graph(_CompilerMixin, _ToolCallMixin):
                     )
 
             def register_blocking(future: Future) -> None:
-                self._register_blocking_future(state, future)
+                self._register_blocking_future(
+                    state, future, execution_id=execution_id, attempt=attempt
+                )
 
             async def call_forward():
                 context = ModelAttempt(
@@ -1048,10 +1056,10 @@ class Graph(_CompilerMixin, _ToolCallMixin):
                     # Blocking business runs off the event loop so one node
                     # cannot freeze sibling deadlines. The thread cannot be
                     # killed; the attempt is abandoned and its result rejected.
-                    future = self._blocking_pool(state).submit(
-                        node_plan.forward, item.info
+                    future = self._register_blocking_future(
+                        state, self._blocking_pool(state).submit(node_plan.forward, item.info),
+                        execution_id=execution_id, attempt=attempt,
                     )
-                    state.blocking_futures[execution_id] = future
                     return await asyncio.wrap_future(future)
 
             business = asyncio.create_task(call_forward())
@@ -1059,14 +1067,11 @@ class Graph(_CompilerMixin, _ToolCallMixin):
             remaining = None if deadline is None else max(0, deadline - perf_counter())
             done, _ = await asyncio.wait({business}, timeout=remaining)
             if not done:
-                future = state.blocking_futures.get(execution_id)
-                thread_running = future is not None and not future.done()
                 # Cancellation is left to the single cleanup path: issuing one
                 # here and another there would interrupt a node that swallows
                 # cancellation to finish its own cleanup.
-                raise _AttemptDeadlineExpired(thread_running=thread_running)
+                raise _AttemptDeadlineExpired()
             result = business.result()
-            state.blocking_futures.pop(execution_id, None)
             if state.status != "RUNNING":
                 raise state.terminal_error or asyncio.CancelledError()
             self._check_deadline(deadline)
@@ -1090,8 +1095,12 @@ class Graph(_CompilerMixin, _ToolCallMixin):
                 node_execution_id=execution_id, event_id=started["event_id"],
                 attempt=attempt, started_at=started_at, deadline=deadline,
             )
-        except (_AttemptDeadlineExpired, ModelDeadlineExpired) as exc:
-            thread_running = bool(getattr(exc, "thread_running", False))
+        except (_AttemptDeadlineExpired, ModelDeadlineExpired):
+            with self._definition_lock:
+                thread_running = any(
+                    key[:2] == (execution_id, attempt) and not future.done()
+                    for key, future in state.blocking_futures.items()
+                )
             error = _safe_error(NodeTimeoutError,
                 f"节点 {node_plan.name} 第 {attempt} 次尝试超过 "
                 f"{float(timeout):g} 秒；本次 Graph 运行停止", run_id=state.run_id
@@ -1169,7 +1178,7 @@ class Graph(_CompilerMixin, _ToolCallMixin):
         return state.blocking_pool
 
     def _register_blocking_future(
-        self, state: _RunState, future: Future
+        self, state: _RunState, future: Future, *, execution_id: str, attempt: int,
     ) -> Future:
         """Track a blocking future until it finishes, then forget it.
 
@@ -1177,12 +1186,14 @@ class Graph(_CompilerMixin, _ToolCallMixin):
         thread still reads node declarations.
         """
 
-        key = f"blocking:{uuid4().hex}"
-        state.blocking_futures[key] = future
+        key = (execution_id, attempt, uuid4().hex)
+        with self._definition_lock:
+            state.blocking_futures[key] = future
 
         def forget(done: Future) -> None:
-            if state.blocking_futures.get(key) is done:
-                state.blocking_futures.pop(key, None)
+            with self._definition_lock:
+                if state.blocking_futures.get(key) is done:
+                    state.blocking_futures.pop(key, None)
 
         future.add_done_callback(forget)
         return future
@@ -1327,7 +1338,7 @@ class Graph(_CompilerMixin, _ToolCallMixin):
             self._release_cleanup(state, entry)
 
     def _cleanup_future_exited(
-        self, state: _RunState, key: str, future: Future
+        self, state: _RunState, key: tuple[str, int, str], future: Future
     ) -> None:
         with self._definition_lock:
             if state.blocking_futures.get(key) is future:
@@ -1362,12 +1373,6 @@ class Graph(_CompilerMixin, _ToolCallMixin):
         state.delayed = remaining
         for entry in due:
             ready.append(entry.item)
-
-    @staticmethod
-    async def _sleep_until_next_retry(state: _RunState) -> None:
-        earliest = min(entry.ready_at for entry in state.delayed)
-        await asyncio.sleep(max(0.0, earliest - perf_counter()))
-
 
     def _formalize_output(
         self,

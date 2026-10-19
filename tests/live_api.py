@@ -1,4 +1,4 @@
-"""One bounded live regression: test1-5 shapes, explicit hub and API baselines."""
+"""One bounded live regression: fixed graphs, Hub and one internal tool loop."""
 
 import argparse
 import asyncio
@@ -15,8 +15,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from easy_agent import Graph, Info, Node
+from easy_agent import _api
 from api_support import (
-    events_for, inspect_workflow, inspect_success, model_records, options, safe_error, source_hashes,
+    LiveCheckError, events_for, inspect_workflow, inspect_success, model_records,
+    options, safe_error, source_hashes,
 )
 
 
@@ -25,7 +27,7 @@ def run_live(env_file, round_name):
         'status': 'failed', 'round': round_name,
         'python': platform.python_version(), 'python_executable': sys.executable,
         'python_environment': sys.prefix, 'env_file': str(Path(env_file).resolve()),
-        'planned_request_count': 19, 'request_count': 0,
+        'planned_request_count': 21, 'request_count': 0,
         'request_count_basis': 'ModelRequestStarted events',
         'max_output_tokens_per_request': 128, 'max_attempts': 1,
         'cases': [], 'source_sha256': source_hashes(),
@@ -76,6 +78,47 @@ def run_live(env_file, round_name):
         started = monotonic()
         current.update(asyncio.run(async_case()))
         current.update(status='passed', duration_seconds=round(monotonic() - started, 3))
+
+        current = {'case': 'internal_function_tool', 'status': 'failed', 'planned_requests': 2}
+        report['cases'].append(current)
+        called = []
+
+        def add(a: float, b: int | None = None) -> float:
+            """Add a and b; a missing b is zero."""
+            called.append((a, b))
+            return a + (b or 0)
+
+        graph = capture_graph(env_file=env_file, allowed_tools={'add'}, timeout=30,
+                              max_output_tokens=128, max_attempts=1)
+        graph.llm = Node(tools=[add], prompt=(
+            'Call add exactly once with a=2 and b=3. Use the tool result, '
+            'then reply with only the integer 5, without explanation.'
+        ))
+        started = monotonic()
+        post = _api._post
+        sent = 0
+
+        async def bounded_post(*args):
+            nonlocal sent
+            if sent >= 2:
+                current['http_call_limit_reached'] = True
+                raise LiveCheckError('tool_request_budget', graph._last_run_id)
+            sent += 1
+            return await post(*args)
+
+        try:
+            with patch('easy_agent._api._post', bounded_post):
+                outputs = graph.run([Info('Use the tool to calculate 2 + 3.')])
+        finally:
+            current['http_adapter_calls'] = sent
+        current.update(inspect_success(graph, outputs, ('5',), values['LLM_API_KEY'],
+                                       2, values['LLM_MODEL_ID']))
+        tool_events = [event['event_type'] for event in events_for(graph)
+                       if event['event_type'].startswith('ToolCall')]
+        if called != [(2, 3)] or tool_events != ['ToolCallStarted', 'ToolCallFinished']:
+            raise LiveCheckError('internal_tool_execution', graph._last_run_id)
+        current.update(status='passed', tool_arguments=called, tool_events=tool_events,
+                       duration_seconds=round(monotonic() - started, 3))
         report['status'] = 'passed'
     except Exception as error:
         failure = safe_error(error)

@@ -88,7 +88,7 @@ def validate_model_config(
     if config.get("provider") not in {None, "deepseek"}:
         raise _safe_error(UnsupportedFeatureError, "最小内置适配器仅支持 provider='deepseek'")
     if output_schema not in {None, str} and not (hub_contract is not None and output_schema is dict):
-        raise _safe_error(UnsupportedFeatureError, "最小 API 适配器仅支持字符串输出；详见 v0.3-api-minimal.md")
+        raise _safe_error(UnsupportedFeatureError, "内置适配器仅支持字符串输出和固定 Hub 输出契约")
     if not isinstance(config.get("model"), str) or not config["model"].strip():
         raise _safe_error(ConfigurationError, "内置模型节点缺少有效 model")
     endpoint_url(config.get("base_url"))
@@ -145,7 +145,7 @@ def _usage(payload: dict[str, Any], maximum: int) -> dict[str, int | None] | Non
     )
     completion = safe_usage["completion_tokens"]
     if completion is not None and completion > maximum:
-        raise _failure("模型报告的输出 Token 用量超过尝试上限")
+        raise _failure("模型报告的输出 Token 用量超过本轮剩余预算")
     return safe_usage
 
 
@@ -190,8 +190,11 @@ def _parse_payload(payload: Any, maximum: int) -> dict[str, Any]:
     usage = _usage(payload, maximum)
     reported = payload.get("model")
     calls = _tool_calls(message)
+    finish_reason = choice.get("finish_reason")
     safe_model = reported if isinstance(reported, str) and reported else None
     if calls:
+        if finish_reason != "tool_calls":
+            raise _failure("模型未正常完成工具请求，拒绝执行截断或中止调用")
         content = message.get("content")
         return {
             "kind": "tools",
@@ -199,8 +202,9 @@ def _parse_payload(payload: Any, maximum: int) -> dict[str, Any]:
             "content": content if isinstance(content, str) else "",
             "usage": usage,
             "reported_model": safe_model,
+            "finish_reason": finish_reason,
         }
-    if choice.get("finish_reason") != "stop":
+    if finish_reason != "stop":
         raise _failure("模型未正常完成文本输出，拒绝发布截断或中止结果")
     content = message.get("content")
     if not isinstance(content, str) or not content.strip():
@@ -211,6 +215,7 @@ def _parse_payload(payload: Any, maximum: int) -> dict[str, Any]:
         "content": content,
         "usage": usage,
         "reported_model": safe_model,
+        "finish_reason": finish_reason,
     }
 
 
@@ -248,8 +253,7 @@ async def call_model(info: Info, node_id: str) -> Info:
         plain_data(info), ensure_ascii=False, sort_keys=True, separators=(",", ":")
     )
     messages.append({"role": "user", "content": user})
-    maximum = int(config["max_output_tokens"])
-    budget = maximum
+    budget = int(config["max_output_tokens"])
     rounds = 0
     while True:
         rounds += 1
@@ -285,14 +289,14 @@ async def call_model(info: Info, node_id: str) -> Info:
             payload = response.json()
         except (ValueError, UnicodeError):
             raise _failure("模型响应不是合法 JSON") from None
-        parsed = _parse_payload(payload, maximum)
+        parsed = _parse_payload(payload, budget)
         completion = (parsed["usage"] or {}).get("completion_tokens")
         if completion is not None:
             budget -= completion
         _event(context, "ModelRequestFinished", {
             "requested_model": config["model"],
             "reported_model": parsed["reported_model"],
-            "finish_reason": "tool_calls" if parsed["calls"] else "stop",
+            "finish_reason": parsed["finish_reason"],
             "usage": parsed["usage"],
             "round": rounds,
         })
@@ -305,6 +309,8 @@ async def call_model(info: Info, node_id: str) -> Info:
             raise _safe_error(UnsupportedFeatureError, "该节点不具备内部工具执行入口")
         if completion is None:
             raise _failure("模型请求续轮但未报告用量，无法核算输出预算")
+        if budget <= 0:
+            raise _failure("本次尝试的输出预算已耗尽，拒绝执行无法续轮的工具调用")
         _event(context, "ModelToolRound", {
             "round": rounds, "tool_count": len(parsed["calls"]),
         })

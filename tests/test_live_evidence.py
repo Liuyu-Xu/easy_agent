@@ -15,6 +15,7 @@ import httpx
 from easy_agent import Graph
 import live_api
 import run_api_round
+from test_execution_fixes import tool_response
 
 
 class LiveEvidenceTests(unittest.TestCase):
@@ -32,7 +33,7 @@ class LiveEvidenceTests(unittest.TestCase):
         environment.start()
         self.addCleanup(environment.stop)
 
-    def execute(self, fail_index=None, hub_output=None, single_output=None):
+    def execute(self, fail_index=None, hub_output=None, single_output=None, repeat_tool=False):
         requests = []
         expected = ['API_TEST_OK', '2', '3', '2', '4', '6', '2', '3', '4',
                     '2', '4', '6', '8', '2', '4', '{"out_1":"8","out_0":"6"}',
@@ -43,6 +44,16 @@ class LiveEvidenceTests(unittest.TestCase):
             requests.append(request)
             if index == fail_index:
                 return httpx.Response(503, text='do not expose ' + self.secret)
+            if index == 19:
+                return httpx.Response(200, json=tool_response(arguments='{"a":2,"b":3}'))
+            if index == 20:
+                if repeat_tool:
+                    return httpx.Response(200, json=tool_response(arguments='{"a":2,"b":3}'))
+                return httpx.Response(200, json={
+                    'model': 'test-model',
+                    'choices': [{'message': {'content': '5'}, 'finish_reason': 'stop'}],
+                    'usage': {'completion_tokens': 3},
+                })
             text = expected[index]
             if index == 15 and hub_output is not None:
                 text = hub_output
@@ -64,11 +75,11 @@ class LiveEvidenceTests(unittest.TestCase):
         self.assertNotIn(self.secret, json.dumps(report))
         return report, requests
 
-    def test_all_shapes_hub_and_async_case_run_exactly_nineteen_requests(self):
+    def test_all_shapes_hub_async_and_internal_tool_run_twenty_one_requests(self):
         report, requests = self.execute()
         self.assertEqual(report['status'], 'passed')
-        self.assertEqual(report['request_count'], 19)
-        self.assertEqual([case['request_count'] for case in report['cases']], [1, 2, 3, 3, 4, 5, 1])
+        self.assertEqual(report['request_count'], 21)
+        self.assertEqual([case['request_count'] for case in report['cases']], [1, 2, 3, 3, 4, 5, 1, 2])
         for case, shape in zip(report['cases'][1:4], ((1, 1), (2, 1), (1, 2))):
             self.assertEqual((case['start_count'], case['end_count']), shape)
             self.assertTrue(case['message_delivery_verified'])
@@ -89,6 +100,26 @@ class LiveEvidenceTests(unittest.TestCase):
         self.assertTrue(report['cases'][5]['hub_port_mapping_verified'])
         self.assertIn('test/test1_5.py', report['source_sha256'])
         self.assertIn('tests/api_support.py', report['source_sha256'])
+        self.assertEqual(report['cases'][-1]['tool_arguments'], [(2, 3)])
+        self.assertEqual([record['finish_reason'] for record in report['cases'][-1]['models']],
+                         ['tool_calls', 'stop'])
+        self.assertEqual([record['round'] for record in report['cases'][-1]['models']], [1, 2])
+
+    def test_live_tool_http_failure_retains_baselines_without_retry(self):
+        report, requests = self.execute(fail_index=19)
+        self.assertEqual(report['status'], 'failed')
+        self.assertEqual(len(requests), 20)
+        self.assertEqual(report['cases'][-1]['case'], 'internal_function_tool')
+        self.assertEqual(report['cases'][-1]['request_count'], 1)
+        self.assertTrue(all(case['status'] == 'passed' for case in report['cases'][:-1]))
+
+    def test_live_tool_has_hard_two_call_http_limit(self):
+        report, requests = self.execute(repeat_tool=True)
+        self.assertEqual(report['status'], 'failed')
+        self.assertEqual(len(requests), 21)
+        self.assertEqual(report['cases'][-1]['http_adapter_calls'], 2)
+        self.assertTrue(report['cases'][-1]['http_call_limit_reached'])
+        self.assertEqual(report['cases'][-1]['models'][-1]['round'], 3)
 
     def test_chain_upstream_failure_keeps_previous_case_and_stops_downstream(self):
         report, requests = self.execute(fail_index=1)

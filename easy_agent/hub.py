@@ -7,6 +7,7 @@ import json
 
 from .errors import _safe_error, GraphValidationError, NodeExecutionError
 from .node import Node
+from ._json import load_object
 
 
 def _strings(name: str, values: list[str]) -> tuple[str, ...]:
@@ -44,17 +45,9 @@ class _HubContract:
         )
 
     def parse(self, text: str) -> dict[str, str]:
-        def unique(pairs):
-            result = {}
-            for key, value in pairs:
-                if key in result:
-                    raise ValueError()
-                result[key] = value
-            return result
-
         try:
-            data = json.loads(text, object_pairs_hook=unique)
-            if not isinstance(data, dict) or set(data) != set(self.output_keys):
+            data = load_object(text)
+            if set(data) != set(self.output_keys):
                 raise ValueError()
             if any(not isinstance(value, str) or not value.strip() for value in data.values()):
                 raise ValueError()

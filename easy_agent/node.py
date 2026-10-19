@@ -325,7 +325,7 @@ class Node:
         if mode != "all":
             raise _safe_error(UnsupportedFeatureError,
                 "v0.3 的 sequence 历史上下文接口和错误类型尚未定稿；"
-                "当前仅实现 mode='all'，详见 v0.3-issues.md"
+                "当前仅支持 receive(mode='all')；时序会话模式尚不支持"
             )
         if not sources:
             raise _safe_error(GraphValidationError, "receive.sources 不能为空")

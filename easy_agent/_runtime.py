@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
+from typing import Any
 
 from .errors import _safe_error, ExecutionLimitError
 from .info import Info
@@ -49,10 +50,6 @@ class _Outcome:
 class _AttemptDeadlineExpired(Exception):
     """Raised only by the framework deadline supervisor."""
 
-    def __init__(self, *, thread_running: bool = False) -> None:
-        super().__init__()
-        self.thread_running = thread_running
-
 
 @dataclass
 class _RunState:
@@ -71,7 +68,7 @@ class _RunState:
     owned_tasks: set[asyncio.Task] = field(default_factory=set)
     cancel_requested: set[asyncio.Task] = field(default_factory=set)
     blocking_pool: ThreadPoolExecutor | None = None
-    blocking_futures: dict[str, Future] = field(default_factory=dict)
+    blocking_futures: dict[tuple[str, int, str], Future] = field(default_factory=dict)
     delayed: list[_Retry] = field(default_factory=list)
     active_attempts: dict[str, int] = field(default_factory=dict)
     completions: asyncio.Queue = field(default_factory=asyncio.Queue)

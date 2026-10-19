@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "easy-agent"
 version = "0.3.0"
 description = "Information-flow oriented agent workflow runtime"
-readme = "v0.3.md"
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["python-dotenv>=1.0,<2.0", "httpx>=0.28,<0.29"]
 

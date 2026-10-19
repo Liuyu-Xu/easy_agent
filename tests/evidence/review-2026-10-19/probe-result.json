@@ -1,0 +1,239 @@
+{
+  "python": "3.10.20",
+  "external_http_requests": 0,
+  "probes": {
+    "retry_timer": {
+      "status": "NodeTimeoutError",
+      "flaky_attempts": 1,
+      "elapsed_ms": 283,
+      "scheduled_retry_ms": 10,
+      "sibling_timeout_ms": 250
+    },
+    "cumulative_budget": {
+      "status": "succeeded",
+      "request_limits": [
+        10,
+        3
+      ],
+      "reported_total_completion_tokens": 13,
+      "attempt_limit": 10,
+      "output": [
+        "done"
+      ],
+      "tool_calls": [
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    "finish_reason": [
+      {
+        "actual_finish_reason": "length",
+        "tool_calls": [
+          [
+            1,
+            2
+          ]
+        ],
+        "requests": 2,
+        "output": [
+          "done"
+        ],
+        "logged_finish_reasons": [
+          "tool_calls",
+          "stop"
+        ]
+      },
+      {
+        "actual_finish_reason": "content_filter",
+        "tool_calls": [
+          [
+            1,
+            2
+          ]
+        ],
+        "requests": 2,
+        "output": [
+          "done"
+        ],
+        "logged_finish_reasons": [
+          "tool_calls",
+          "stop"
+        ]
+      }
+    ],
+    "argument_json": {
+      "duplicate_key_actual_arguments": [
+        [
+          9,
+          2
+        ]
+      ],
+      "nonfinite_value_reached_function": [
+        true
+      ]
+    },
+    "parameter_contract": {
+      "cases": [
+        {
+          "tool": "number",
+          "arguments": "{\"value\":1}",
+          "declared": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "tool_message": "{\"error\":\"invalid_arguments\"}",
+          "output": [
+            "done"
+          ]
+        },
+        {
+          "tool": "optional",
+          "arguments": "{\"value\":null}",
+          "declared": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          },
+          "tool_message": "\"ok\"",
+          "output": [
+            "done"
+          ]
+        },
+        {
+          "tool": "optional",
+          "arguments": "{\"value\":true}",
+          "declared": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          },
+          "tool_message": "\"ok\"",
+          "output": [
+            "done"
+          ]
+        },
+        {
+          "tool": "positional",
+          "arguments": "{\"value\":1}",
+          "declared": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "tool_message": "{\"error\":\"tool_error\"}",
+          "output": [
+            "done"
+          ]
+        }
+      ],
+      "executed": [
+        [
+          "NoneType",
+          null
+        ],
+        [
+          "bool",
+          true
+        ]
+      ]
+    },
+    "tool_object_schema": {
+      "entered_with": [
+        "FrozenDict"
+      ],
+      "tool_message": "\"not-an-integer\"",
+      "declared": {
+        "type": "object"
+      },
+      "output": [
+        "done"
+      ],
+      "graph_node_controls": [
+        {
+          "direction": "input",
+          "status": "InfoError"
+        },
+        {
+          "direction": "output",
+          "status": "InfoError"
+        }
+      ]
+    },
+    "blocking_timeout_metadata": {
+      "status": "NodeTimeoutError",
+      "entered": true,
+      "retained_cleanup": true,
+      "thread_not_released": true,
+      "timeout_events": [
+        {
+          "timeout_seconds": 0.15,
+          "duration_ms": 165.503,
+          "deadline_enforced": true,
+          "blocking_thread_still_running": false
+        }
+      ],
+      "cleanup_released_after_thread_exit": true
+    },
+    "runtime_type_hints": {
+      "status": "NameError",
+      "message": "name 'Any' is not defined"
+    },
+    "internal_tool_steps": {
+      "max_steps": 1,
+      "internal_tools_executed": [
+        1,
+        2,
+        3
+      ],
+      "model_requests": 2,
+      "output": [
+        "done"
+      ]
+    }
+  },
+  "source_sha256": {
+    "__init__.py": "29e1038ea5cfea5e18cb437bb91c61c75ec7ec7728d6a94e176e34bfb9e95a55",
+    "_api.py": "fe6c70027c289ae4fa9cd9cd2d68121764d55d47ac3ed801d468358ffb6203ac",
+    "_blocking.py": "4454b5efab9dfa9cf8cf3a55798ad8a02dab87b74b3314db27a25d0c63c73fc2",
+    "_compiler.py": "a023bbefb95bd04ba8117baf48e08ffc33d7e1e45d755fa16a096e583087f500",
+    "_definition.py": "d6ec011b322074ef0e729aa18d6b99151c4e3ea5721f560fee0f7363547c8908",
+    "_plan.py": "bcbee91dcf294e4c7a27a6a5075399a3a978beda1726aada1f792aed1ce1db80",
+    "_runtime.py": "510316e6560a04be82071f2ffd1d002a4660f57d79d42c516492bda1233f887f",
+    "_toolcall.py": "117d7ffaa8fe735938a4545bd5a14f338ebe22f6efda13f80f853491f69507f2",
+    "config.py": "8c12f01daf3d396a5894e61cf758e48c24f4e413e59ba01b68372b6d5293e3e2",
+    "errors.py": "fa6f089a033a6d1977a317cc67177646cd1bd3d81bd6fba595e1b005ef7102a1",
+    "events.py": "56fc1e916686a7f36ebe52ca16c0abe4ea772e3a5b718ea695fa45c1d654d64c",
+    "graph.py": "ed12e3a2d3eaf94162d7577af1608f375950a9c4073abf3b2e5d172b17e0efc9",
+    "hub.py": "607b971128dc6a7a495bcdaa5c3ed06a4c3d10207ba17035e3046ae198cc6277",
+    "info.py": "586af7e84601bc34f8314c01307ad77cd91f9ba051b1cdfd222bd298390d6268",
+    "node.py": "0684ee68043c0ec660b5536e95a3899475e7846fcd70d4557ab1c5cea49b94bd",
+    "tools.py": "5035a0edd123a1ea2f2f36ee5e32310fd43ba8627e652fbac7bd0e8f1d9ef794"
+  }
+}

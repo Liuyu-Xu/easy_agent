@@ -1,0 +1,6 @@
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry 已弃用；请改用表示总机会数的 max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+----------------------------------------------------------------------
+Ran 246 tests in 8.341s
+
+OK

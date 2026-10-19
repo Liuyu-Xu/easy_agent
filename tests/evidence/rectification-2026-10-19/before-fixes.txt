@@ -1,0 +1,255 @@
+======================================================================
+ERROR: test_due_retry_runs_while_sibling_is_waiting (test_review_fixes.ReviewRegressionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 57, in test_due_retry_runs_while_sibling_is_waiting
+    outputs = graph.run([Info("audit")])
+  File "D:\project\easy_agent\easy_agent\graph.py", line 696, in run
+    return asyncio.run(
+  File "D:\anaconda3\envs\common\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "D:\anaconda3\envs\common\lib\asyncio\base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "D:\project\easy_agent\easy_agent\graph.py", line 739, in arun
+    raise _safe_error(
+easy_agent.errors.NodeTimeoutError: 节点 b 第 1 次尝试超过 1 秒；本次 Graph 运行停止 [run_id=c29730fefe674006b3b8479b35ed3e2b]
+
+======================================================================
+ERROR: test_number_and_nullable_contract_matches_declaration (test_review_fixes.ReviewRegressionTests) (tool='number', raw='{"value":1}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 198, in test_number_and_nullable_contract_matches_declaration
+    self.assertEqual(seen[-1], value)
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_runtime_dataclass_annotations_resolve (test_review_fixes.ReviewRegressionTests) (name='_WorkItem')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 315, in test_runtime_dataclass_annotations_resolve
+    self.assertEqual(set(get_type_hints(cls)), {f.name for f in fields(cls)})
+  File "D:\anaconda3\envs\common\lib\typing.py", line 1833, in get_type_hints
+    value = _eval_type(value, base_globals, base_locals)
+  File "D:\anaconda3\envs\common\lib\typing.py", line 327, in _eval_type
+    return t._evaluate(globalns, localns, recursive_guard)
+  File "D:\anaconda3\envs\common\lib\typing.py", line 694, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+  File "<string>", line 1, in <module>
+NameError: name 'Any' is not defined
+
+======================================================================
+ERROR: test_runtime_dataclass_annotations_resolve (test_review_fixes.ReviewRegressionTests) (name='_Outcome')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 315, in test_runtime_dataclass_annotations_resolve
+    self.assertEqual(set(get_type_hints(cls)), {f.name for f in fields(cls)})
+  File "D:\anaconda3\envs\common\lib\typing.py", line 1833, in get_type_hints
+    value = _eval_type(value, base_globals, base_locals)
+  File "D:\anaconda3\envs\common\lib\typing.py", line 327, in _eval_type
+    return t._evaluate(globalns, localns, recursive_guard)
+  File "D:\anaconda3\envs\common\lib\typing.py", line 694, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+  File "<string>", line 1, in <module>
+NameError: name 'Any' is not defined
+
+======================================================================
+ERROR: test_runtime_dataclass_annotations_resolve (test_review_fixes.ReviewRegressionTests) (name='_RunState')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 315, in test_runtime_dataclass_annotations_resolve
+    self.assertEqual(set(get_type_hints(cls)), {f.name for f in fields(cls)})
+  File "D:\anaconda3\envs\common\lib\typing.py", line 1833, in get_type_hints
+    value = _eval_type(value, base_globals, base_locals)
+  File "D:\anaconda3\envs\common\lib\typing.py", line 327, in _eval_type
+    return t._evaluate(globalns, localns, recursive_guard)
+  File "D:\anaconda3\envs\common\lib\typing.py", line 694, in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+  File "<string>", line 1, in <module>
+NameError: name 'Any' is not defined
+
+======================================================================
+FAIL: test_aborted_or_inconsistent_tool_responses_never_execute (test_review_fixes.ReviewRegressionTests) (finish='length')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 152, in test_aborted_or_inconsistent_tool_responses_never_execute
+    with self.assertRaises(NodeExecutionError):
+AssertionError: NodeExecutionError not raised
+
+======================================================================
+FAIL: test_aborted_or_inconsistent_tool_responses_never_execute (test_review_fixes.ReviewRegressionTests) (finish='content_filter')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 152, in test_aborted_or_inconsistent_tool_responses_never_execute
+    with self.assertRaises(NodeExecutionError):
+AssertionError: NodeExecutionError not raised
+
+======================================================================
+FAIL: test_aborted_or_inconsistent_tool_responses_never_execute (test_review_fixes.ReviewRegressionTests) (finish='stop')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 152, in test_aborted_or_inconsistent_tool_responses_never_execute
+    with self.assertRaises(NodeExecutionError):
+AssertionError: NodeExecutionError not raised
+
+======================================================================
+FAIL: test_aborted_or_inconsistent_tool_responses_never_execute (test_review_fixes.ReviewRegressionTests) (finish=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 152, in test_aborted_or_inconsistent_tool_responses_never_execute
+    with self.assertRaises(NodeExecutionError):
+AssertionError: NodeExecutionError not raised
+
+======================================================================
+FAIL: test_aborted_or_inconsistent_tool_responses_never_execute (test_review_fixes.ReviewRegressionTests) (finish='unknown')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 152, in test_aborted_or_inconsistent_tool_responses_never_execute
+    with self.assertRaises(NodeExecutionError):
+AssertionError: NodeExecutionError not raised
+
+======================================================================
+FAIL: test_bool_does_not_satisfy_number_or_optional_integer (test_review_fixes.ReviewRegressionTests) (tool='optional')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 212, in test_bool_does_not_satisfy_number_or_optional_integer
+    self.assertEqual(json.loads(requests[1]["messages"][-1]["content"]),
+AssertionError: {'error': 'tool_error'} != {'error': 'invalid_arguments'}
+- {'error': 'tool_error'}
++ {'error': 'invalid_arguments'}
+
+======================================================================
+FAIL: test_cumulative_budget_rejects_overspend_before_tools_or_publish (test_review_fixes.ReviewRegressionTests) (continuation=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 113, in test_cumulative_budget_rejects_overspend_before_tools_or_publish
+    with self.transport(handler), self.assertRaises(NodeExecutionError):
+AssertionError: NodeExecutionError not raised
+
+======================================================================
+FAIL: test_cumulative_budget_rejects_overspend_before_tools_or_publish (test_review_fixes.ReviewRegressionTests) (continuation=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 116, in test_cumulative_budget_rejects_overspend_before_tools_or_publish
+    self.assertEqual(called, [(1, 2)])
+AssertionError: Lists differ: [(1, 2), (1, 2)] != [(1, 2)]
+
+First list contains 1 additional elements.
+First extra element 1:
+(1, 2)
+
+- [(1, 2), (1, 2)]
++ [(1, 2)]
+
+======================================================================
+FAIL: test_exact_budget_final_is_allowed_but_no_budget_continuation_is_not (test_review_fixes.ReviewRegressionTests) (continuation=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 139, in test_exact_budget_final_is_allowed_but_no_budget_continuation_is_not
+    self.assertEqual(called, [(1, 2)])
+AssertionError: Lists differ: [(1, 2), (1, 2)] != [(1, 2)]
+
+First list contains 1 additional elements.
+First extra element 1:
+(1, 2)
+
+- [(1, 2), (1, 2)]
++ [(1, 2)]
+
+======================================================================
+FAIL: test_internal_blocking_timeout_reports_actual_thread_and_keeps_lease (test_review_fixes.ReviewRegressionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 302, in test_internal_blocking_timeout_reports_actual_thread_and_keeps_lease
+    self.assertFalse(timed[0]["data"]["deadline_enforced"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_internal_tool_rejects_incompatible_input_schema_before_http (test_review_fixes.ReviewRegressionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 255, in test_internal_tool_rejects_incompatible_input_schema_before_http
+    with self.assertRaises(UnsupportedFeatureError):
+AssertionError: UnsupportedFeatureError not raised
+
+======================================================================
+FAIL: test_internal_tool_validates_output_schema_and_info_return_type (test_review_fixes.ReviewRegressionTests) (invalid='Info')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 269, in test_internal_tool_validates_output_schema_and_info_return_type
+    self.assertEqual(json.loads(requests[1]["messages"][-1]["content"]),
+AssertionError: 'wrong-type' != {'error': 'tool_error'}
+
+======================================================================
+FAIL: test_internal_tool_validates_output_schema_and_info_return_type (test_review_fixes.ReviewRegressionTests) (invalid='int')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 269, in test_internal_tool_validates_output_schema_and_info_return_type
+    self.assertEqual(json.loads(requests[1]["messages"][-1]["content"]),
+AssertionError: 3 != {'error': 'tool_error'}
+
+======================================================================
+FAIL: test_number_and_nullable_contract_matches_declaration (test_review_fixes.ReviewRegressionTests) (tool='optional', raw='{"value":null}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 197, in test_number_and_nullable_contract_matches_declaration
+    self.assertEqual(schema["properties"]["value"], expected)
+AssertionError: {'type': 'integer'} != {'type': ['integer', 'null']}
+- {'type': 'integer'}
++ {'type': ['integer', 'null']}
+?          +         +++++++++
+
+
+======================================================================
+FAIL: test_number_and_nullable_contract_matches_declaration (test_review_fixes.ReviewRegressionTests) (tool='optional', raw='{"value":2}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 197, in test_number_and_nullable_contract_matches_declaration
+    self.assertEqual(schema["properties"]["value"], expected)
+AssertionError: {'type': 'integer'} != {'type': ['integer', 'null']}
+- {'type': 'integer'}
++ {'type': ['integer', 'null']}
+?          +         +++++++++
+
+
+======================================================================
+FAIL: test_positional_only_tool_is_rejected_before_http (test_review_fixes.ReviewRegressionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 221, in test_positional_only_tool_is_rejected_before_http
+    with self.assertRaises(UnsupportedFeatureError):
+AssertionError: UnsupportedFeatureError not raised
+
+======================================================================
+FAIL: test_runtime_uses_compiled_annotations (test_review_fixes.ReviewRegressionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 244, in test_runtime_uses_compiled_annotations
+    self.assertEqual(seen, [])
+AssertionError: Lists differ: [True] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+True
+
+- [True]
++ []
+
+======================================================================
+FAIL: test_tool_arguments_reject_duplicate_keys_and_nonfinite_nested_values (test_review_fixes.ReviewRegressionTests) (arguments='{"value":{"x":1,"x":2}}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_review_fixes.py", line 170, in test_tool_arguments_reject_duplicate_keys_and_nonfinite_nested_values
+    self.assertEqual(called, [])
+AssertionError: Lists differ: [{'x': 2}] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+{'x': 2}
+
+- [{'x': 2}]
++ []
+
+----------------------------------------------------------------------
+Ran 15 tests in 1.866s
+
+FAILED (failures=18, errors=5)
