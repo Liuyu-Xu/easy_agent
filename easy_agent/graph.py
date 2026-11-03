@@ -29,6 +29,7 @@ from .config import (
 from .errors import (
     _safe_error,
     EasyAgentError,
+    ExecutionLimitError,
     GraphValidationError,
     InfoError,
     NodeExecutionError,
@@ -991,7 +992,6 @@ class Graph(_CompilerMixin, _ToolCallMixin):
             raise asyncio.CancelledError()
         if node_plan.tool is not None:
             self._check_tool_admission(node_plan.tool, node_plan.name)
-        state.consume_step()
         started_at = perf_counter()
         timeout = node_plan.effective_config.get("timeout")
         deadline = started_at + float(timeout) if timeout is not None else None
@@ -1005,6 +1005,7 @@ class Graph(_CompilerMixin, _ToolCallMixin):
         )
         business: asyncio.Task | None = None
         try:
+            state.consume_step()
             normalized_input = self._validate_schema(
                 item.info, node_plan.input_schema, "输入", state.run_id
             )
@@ -1031,7 +1032,7 @@ class Graph(_CompilerMixin, _ToolCallMixin):
                     state, future, execution_id=execution_id, attempt=attempt
                 )
 
-            async def call_forward():
+            async def call_process():
                 context = ModelAttempt(
                     run_id=state.run_id, node_id=item.node_id,
                     node_execution_id=execution_id, attempt=attempt,
@@ -1051,18 +1052,18 @@ class Graph(_CompilerMixin, _ToolCallMixin):
                 with bind_model_attempt(context), bind_blocking(
                     self._blocking_pool(state), register_blocking
                 ):
-                    if inspect.iscoroutinefunction(node_plan.forward):
-                        return await node_plan.forward(item.info)
+                    if inspect.iscoroutinefunction(node_plan.process):
+                        return await node_plan.process(item.info)
                     # Blocking business runs off the event loop so one node
                     # cannot freeze sibling deadlines. The thread cannot be
                     # killed; the attempt is abandoned and its result rejected.
                     future = self._register_blocking_future(
-                        state, self._blocking_pool(state).submit(node_plan.forward, item.info),
+                        state, self._blocking_pool(state).submit(node_plan.process, item.info),
                         execution_id=execution_id, attempt=attempt,
                     )
                     return await asyncio.wrap_future(future)
 
-            business = asyncio.create_task(call_forward())
+            business = asyncio.create_task(call_process())
             state.owned_tasks.add(business)
             remaining = None if deadline is None else max(0, deadline - perf_counter())
             done, _ = await asyncio.wait({business}, timeout=remaining)
@@ -1077,7 +1078,7 @@ class Graph(_CompilerMixin, _ToolCallMixin):
             self._check_deadline(deadline)
             if not isinstance(result, Info):
                 raise _safe_error(NodeExecutionError,
-                    f"节点 {node_plan.name} 的 forward() 必须返回 Info",
+                    f"节点 {node_plan.name} 的 process() 必须返回 Info",
                     run_id=state.run_id,
                 )
             normalized_output = self._validate_schema(
@@ -1095,6 +1096,17 @@ class Graph(_CompilerMixin, _ToolCallMixin):
                 node_execution_id=execution_id, event_id=started["event_id"],
                 attempt=attempt, started_at=started_at, deadline=deadline,
             )
+        except ExecutionLimitError as error:
+            self._stop_run(state, "FAILED", error)
+            self._event_store.append(
+                state.run_id, "NodeFailed", category="node",
+                span_id=execution_id, node_id=item.node_id,
+                node_execution_id=execution_id, attempt=attempt,
+                info_ids=[item.info.id],
+                data={"error_type": type(error).__name__,
+                      "reason": "max_steps", "attempts_used": attempt},
+            )
+            raise
         except (_AttemptDeadlineExpired, ModelDeadlineExpired):
             with self._definition_lock:
                 thread_running = any(
@@ -1681,6 +1693,7 @@ class Graph(_CompilerMixin, _ToolCallMixin):
         *,
         run_id: str | None = None,
         node: Node | None = None,
+        category: str | None = "graph",
         node_execution_id: str | None = None,
         event_type: str | None = None,
         offset: int = 0,
@@ -1691,9 +1704,14 @@ class Graph(_CompilerMixin, _ToolCallMixin):
             return []
         if node is not None and node.owner is not self:
             raise _safe_error(OwnershipError, "只能查询当前 Graph 所属 Node 的日志")
+        if category not in {None, "graph", "node", "model", "audit"}:
+            raise ValueError("category 必须是 graph、node、model、audit 或 None")
+        if node is not None and category not in {None, "node"}:
+            raise ValueError("指定 node 时 category 必须为 node 或 None")
+        selected_category = "node" if node is not None else category
         return self._event_store.query(
             run_id=selected_run,
-            category="node" if node is not None else "graph",
+            category=selected_category,
             node_id=node.id if node is not None else None,
             node_execution_id=node_execution_id,
             event_type=event_type,

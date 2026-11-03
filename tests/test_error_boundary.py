@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Echo(Node):
-    def forward(self, info):
+    def process(self, info):
         return info
 
 
@@ -66,7 +66,7 @@ class ErrorBoundaryTests(unittest.TestCase):
     def test_sync_external_errors_and_exact_framework_classes_are_normalized(self):
         for kind in (ValueError, EasyAgentError, NodeExecutionError, LoggingError):
             class Fails(Node):
-                def forward(self, info):
+                def process(self, info):
                     raise kind(MARKER)
 
             with self.subTest(kind=kind):
@@ -79,7 +79,7 @@ class ErrorBoundaryTests(unittest.TestCase):
 
     def test_async_external_cause_and_foreign_run_id_are_removed(self):
         class Fails(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 try:
                     raise ValueError(MARKER)
                 except ValueError as cause:
@@ -98,7 +98,7 @@ class ErrorBoundaryTests(unittest.TestCase):
                 raise AssertionError("External formatter must not execute")
 
         class Fails(Node):
-            def forward(self, info):
+            def process(self, info):
                 raise Untrusted(MARKER)
 
         error = self.safe_failure(lambda: self.graph(Fails()).run([Info("start")])[0], NodeExecutionError)
@@ -106,7 +106,7 @@ class ErrorBoundaryTests(unittest.TestCase):
 
     def test_tampered_framework_message_cannot_bypass_boundary(self):
         class Fails(Node):
-            def forward(self, info):
+            def process(self, info):
                 error = _safe_error(NodeExecutionError, "safe internal description")
                 error.args = (MARKER,)
                 raise error
@@ -115,7 +115,7 @@ class ErrorBoundaryTests(unittest.TestCase):
 
     def test_trusted_message_survives_but_attached_external_chain_does_not(self):
         class Fails(Node):
-            def forward(self, info):
+            def process(self, info):
                 raise _safe_error(NodeExecutionError, "safe internal description") from ValueError(MARKER)
 
         error = self.safe_failure(lambda: self.graph(Fails()).run([Info("start")])[0], NodeExecutionError)
@@ -286,7 +286,7 @@ from unittest.mock import patch
 from easy_agent import Graph, Node
 
 class Fails(Node):
-    def forward(self, info):
+    def process(self, info):
         raise ValueError("synthetic-sensitive-boundary")
 
 def graph_factory(**kwargs):
@@ -308,6 +308,13 @@ with patch("easy_agent.Graph", graph_factory), patch("easy_agent.Node", Fails), 
     def test_unique_execution_entry_and_shared_declaration_implementation(self):
         self.assertIs(Graph.__call__, Graph.run)
         self.assertNotIn("invoke", Tool.__dict__)
+        self.assertFalse(hasattr(Node, "forward"))
+        self.assertIn("process", Node.__dict__)
+        with self.assertRaises(TypeError):
+            class LegacyForward(Node):
+                def forward(self, info):
+                    return info
+
         self.assertNotIn("_set_route", Node.__dict__)
         self.assertNotIn("_set_receive", Node.__dict__)
         self.assertNotIn("_validate_positive_int", Node.__dict__)
@@ -337,7 +344,7 @@ class ConcurrentErrorTests(unittest.IsolatedAsyncioTestCase):
     async def test_parallel_failures_keep_messages_and_run_ids_isolated(self):
         with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {}, clear=True):
             class Fails(Node):
-                async def forward(self, info):
+                async def process(self, info):
                     await asyncio.sleep(0)
                     raise NodeExecutionError(MARKER, run_id=MARKER)
 

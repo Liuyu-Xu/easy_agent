@@ -108,7 +108,7 @@ class HubTests(HubFixture, unittest.TestCase):
         seen = []
 
         class Capture(Node):
-            def forward(self, info):
+            def process(self, info):
                 seen.append(info)
                 return info
 
@@ -138,7 +138,7 @@ class HubTests(HubFixture, unittest.TestCase):
         received = []
 
         class Capture(Echo):
-            def forward(self, info):
+            def process(self, info):
                 received.append(info)
                 return info
 
@@ -192,7 +192,7 @@ class HubTests(HubFixture, unittest.TestCase):
         seen = []
 
         class Capture(Echo):
-            def forward(self, info):
+            def process(self, info):
                 seen.append(info)
                 return info
 
@@ -308,7 +308,7 @@ class AsyncHubTests(HubFixture, unittest.IsolatedAsyncioTestCase):
         started, cancelled = asyncio.Event(), asyncio.Event()
 
         class Target(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 if info.text == "LEFT":
                     await asyncio.wait_for(started.wait(), 2)
                     raise ValueError("injected failure")
@@ -367,11 +367,11 @@ class AsyncHubTests(HubFixture, unittest.IsolatedAsyncioTestCase):
 
     async def test_upstream_failure_does_not_invoke_hub(self):
         class Fail(Echo):
-            def forward(self, info):
+            def process(self, info):
                 raise RuntimeError("failure")
 
         graph, a, _, _, _, _ = self.assembled(execution="async")
-        with patch.object(a, "forward", Fail().forward), self.transport(
+        with patch.object(a, "process", Fail().process), self.transport(
                 lambda request: self.fail("Hub must not start")):
             with self.assertRaises(NodeExecutionError):
                 await graph.arun([Info("A"), Info("B")])

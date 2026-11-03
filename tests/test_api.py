@@ -100,6 +100,11 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(metadata["usage"]["completion_tokens"], 3)
         self.assertNotIn(SECRET, json.dumps({"events": events, "export": graph.to_dict()}))
         self.assertEqual(graph._active_runs, 0)
+        self.assertEqual(
+            len(graph.logs(run_id=result.run_id, category="model",
+                           event_type="ModelRequestFinished")),
+            1,
+        )
 
     async def test_json_input_is_deterministic_user_text(self):
         async def handler(request):
@@ -338,12 +343,12 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
                 results = await asyncio.gather(first.arun([Info("first")]), second.arun([Info("second")]))
         self.assertEqual([r[0].text for r in results], ["first", "second"])
         with self.assertRaises(UnsupportedFeatureError):
-            await first.llm.forward(Info("outside"))
+            await first.llm.process(Info("outside"))
 
     async def test_child_task_cannot_reuse_parent_attempt(self):
         class Child(Node):
-            async def forward(self, info):
-                return await asyncio.create_task(super().forward(info))
+            async def process(self, info):
+                return await asyncio.create_task(super().process(info))
 
         graph = self.graph()
         graph.llm = Child()

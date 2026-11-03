@@ -6,7 +6,7 @@ from easy_agent import Graph, Info, LoggingError, Node
 
 
 class Identity(Node):
-    def forward(self, info):
+    def process(self, info):
         return info
 
 
@@ -25,7 +25,7 @@ async def unobserved_errors(directory):
             super().__init__()
             self.index = index
 
-        async def forward(self, info):
+        async def process(self, info):
             entered[self.index].set()
             await release.wait()
             raise ValueError("controlled simultaneous failure")
@@ -88,11 +88,11 @@ async def timeout_log_failure(directory, fail_log):
             return outcome
 
     class Fast(Node):
-        async def forward(self, info):
+        async def process(self, info):
             return Info("ready sibling")
 
     class Slow(Node):
-        async def forward(self, info):
+        async def process(self, info):
             await asyncio.sleep(10)
             return info
 

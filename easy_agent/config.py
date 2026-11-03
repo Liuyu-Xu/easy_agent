@@ -235,7 +235,39 @@ class _ConfigResolver:
             self.legacy = account, values, reference
         return self.legacy
 
-    def resolve(self, node: Node) -> dict[str, Any]:
+    def resolve(self, node: Node, *, resolve_account: bool = True) -> dict[str, Any]:
+        if not resolve_account:
+            effective = {
+                key: getattr(node, key)
+                for key in ("provider", "model", "base_url")
+            }
+            if effective["provider"] is None:
+                effective["provider"] = self.defaults["provider"]
+            if effective["model"] is None:
+                effective["model"] = self.defaults["model"] or "deepseek-v4-flash"
+            if effective["base_url"] is None:
+                effective["base_url"] = self.defaults["base_url"] or "https://api.deepseek.com"
+            for key in ("provider", "model", "base_url"):
+                self.public_values[f"nodes.{node.name}.{key}"] = effective[key]
+                self.public_values[f"nodes.{node.name}.{key}_source"] = (
+                    "node" if getattr(node, key) is not None else "library_default"
+                )
+            for key in ("temperature", "max_output_tokens", "input_token_budget",
+                        "timeout", "max_attempts"):
+                local = getattr(node, key)
+                effective[key] = local if local is not None else self.defaults[key]
+                self.public_values[f"nodes.{node.name}.{key}"] = effective[key]
+            if effective["input_token_budget"] is not None:
+                self.public_values[
+                    f"nodes.{node.name}.input_token_budget_status"
+                ] = "accepted_not_applied"
+            effective.update(
+                api_key_env=node.api_key_env,
+                _secret_id=None,
+                prompt=node.prompt,
+                role=node.role,
+            )
+            return effective
         scoped = node.env_file is not None
         if scoped:
             values = self._read(node.env_file)

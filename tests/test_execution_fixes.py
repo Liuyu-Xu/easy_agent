@@ -103,7 +103,7 @@ class FixTestCase(unittest.TestCase):
 
 
 class Start(Node):
-    def forward(self, info):
+    def process(self, info):
         return Info("start")
 
 
@@ -119,12 +119,12 @@ class BlockingExecutionTests(FixTestCase):
         observed = {}
 
         class SlowSync(Node):
-            def forward(self, info):
+            def process(self, info):
                 time.sleep(0.2)
                 return Info("slow")
 
         class Timed(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 started = time.perf_counter()
                 await asyncio.sleep(0.05)
                 observed["elapsed"] = time.perf_counter() - started
@@ -142,12 +142,12 @@ class BlockingExecutionTests(FixTestCase):
 
     def test_sibling_deadline_is_not_charged_to_a_blocked_loop(self):
         class SlowSync(Node):
-            def forward(self, info):
+            def process(self, info):
                 time.sleep(0.3)
                 return Info("slow")
 
         class Timed(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 await asyncio.sleep(0.05)
                 return Info("fast")
 
@@ -166,7 +166,7 @@ class BlockingExecutionTests(FixTestCase):
         entered, release = threading.Event(), threading.Event()
 
         class Stuck(Node):
-            def forward(self, info):
+            def process(self, info):
                 entered.set()
                 release.wait(5)
                 return Info("late")
@@ -188,7 +188,7 @@ class BlockingExecutionTests(FixTestCase):
 
     def test_event_loop_stall_is_recorded(self):
         class BlockingAsync(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 await asyncio.sleep(0)
                 time.sleep(0.2)
                 return Info("late")
@@ -207,7 +207,7 @@ class BlockingExecutionTests(FixTestCase):
         entered, release = threading.Event(), threading.Event()
 
         class Stuck(Node):
-            def forward(self, info):
+            def process(self, info):
                 entered.set()
                 release.wait(5)
                 return Info("late")
@@ -229,7 +229,7 @@ class BlockingExecutionTests(FixTestCase):
 
     def test_async_timeout_still_cancels_without_a_thread(self):
         class Slow(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 await asyncio.sleep(5)
                 return Info("late")
 
@@ -317,14 +317,14 @@ class RetryTests(FixTestCase):
         order = []
 
         class Flaky(Node):
-            def forward(self, info):
+            def process(self, info):
                 order.append("A")
                 if order.count("A") == 1:
                     raise retryable_error()
                 return Info("A")
 
         class Other(Node):
-            def forward(self, info):
+            def process(self, info):
                 order.append("B")
                 return Info("B")
 
@@ -344,7 +344,7 @@ class RetryTests(FixTestCase):
         calls = []
 
         class Boom(Node):
-            def forward(self, info):
+            def process(self, info):
                 calls.append(1)
                 raise ConnectionError("unclassified")
 
@@ -599,7 +599,7 @@ class LegacyToolTests(FixTestCase):
         marks = {}
 
         class Start(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 marks["t0"] = time.perf_counter()
                 return Info("go")
 
@@ -609,7 +609,7 @@ class LegacyToolTests(FixTestCase):
                 return info
 
         class Timed(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 await asyncio.sleep(0.05)
                 marks["done"] = time.perf_counter() - marks["t0"]
                 return Info("B")

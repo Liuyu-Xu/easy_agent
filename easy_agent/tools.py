@@ -16,7 +16,7 @@ from ._blocking import submit_blocking
 class Tool(Node):
     """A graph node with a compatibility bridge for legacy ``invoke`` methods.
 
-    New subclasses may override ``forward`` directly.  Existing subclasses that
+    New subclasses may override ``process`` directly.  Existing subclasses that
     only override ``invoke`` continue to work through the default bridge.
     """
 
@@ -46,11 +46,11 @@ class Tool(Node):
             raise TypeError("side_effect 必须是 bool")
         super().__setattr__(name, value)
 
-    async def forward(self, info: Info) -> Info:
+    async def process(self, info: Info) -> Info:
         legacy = getattr(self, "invoke", None)
         if not callable(legacy):
             raise _safe_error(UnsupportedFeatureError,
-                "Tool 必须覆盖 forward(info)；旧版 invoke(info)仅作兼容"
+                "Tool 必须覆盖 process(info)；旧版 invoke(info)仅作兼容"
             )
         if inspect.iscoroutinefunction(legacy):
             return await legacy(info)

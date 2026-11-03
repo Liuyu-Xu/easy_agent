@@ -1,5 +1,33 @@
 # 变更与验收记录
 
+## 2026-11-03：参数收敛与运行诊断整改
+
+按“公开接口少、内部自动规划、关键参数可调试”的原则完成第一批整改：
+
+- 纯 Python `Node.process()` 在没有显式 Graph/Node 账户作用域时不读取模型账户，不因无关的环境变量冲突而失败；显式 `env_file`、Graph 模型配置或 API key 引用仍保持原有解析和审计。
+- `Graph.logs(category=...)` 增加统一类别查询，支持 `graph`、`node`、`model`、`audit` 和 `None`；Node.logs 继续自动查询 node 类别，未增加第二套日志接口。
+- `max_steps` 计数移动到节点尝试的已记录阶段，超限运行写入 `NodeFailed`，并带 `reason=max_steps`；不再出现任务无事件失败。
+- 没有新增 ToolNode、公开 ChannelSpec、InfoParser 或第二个节点执行入口；Info 解析继续由普通 Node.process 完成。
+
+本批修改新增 2 项回归覆盖纯 Python 账户隔离和 max_steps 失败事件，并增加模型日志类别查询断言。
+
+本批验证证据：[common 确定性与真实联合回归](../tests/evidence/next-improvement-2026-11-03/api-round.txt)、[Python 3.13 确定性回归](../tests/evidence/next-improvement-2026-11-03/python313-tests.txt)。两套 Python 各 249 项确定性测试通过，真实 API 21/21 次请求通过。
+
+## 2026-11-03：节点执行接口统一为 process
+
+按当前接口收敛方案，将 Node、Tool、编译计划、运行时调度、测试和活动文档中的节点执行入口从 `forward(info)` 统一改为 `process(info)`。
+
+- `Node.process(info)` 是唯一节点业务入口；没有保留 `forward` 别名。
+- `Tool.process(info)` 继续支持旧式 `invoke(info)` 兼容桥，但不再提供 `forward` 执行入口。
+- `_NodePlan`、Hub 内置节点检测、模型调用上下文和同步线程调度全部使用 `process`。
+- 定义旧 `forward` 子类时立即抛出 `TypeError`，避免旧实现被静默当成模型节点。
+- 没有新增 `ToolNode`、公开 `ChannelSpec` 或 Info 解析专用节点；Info 解析继续由普通 Node 的 `process` 完成。
+- HubNode 继续继承 Node 配置，可在构造时指定 `env_file`、model、provider、base_url、api_key_env、timeout 和输出预算；prompt、role 以及输入输出结构仍由 Hub 契约管理。
+
+本轮验证：common / Python 3.10.20 确定性测试 247 项通过，真实 API 21/21 次通过；Python 3.13.9 确定性测试 247 项通过。真实 API 仅在本地测试进程读取用户授权的外部密钥文件，未修改该文件。
+
+证据：[common 真实联合回归](../tests/evidence/process-rename-2026-11-03/api-round.txt)、[common JSON 结果](../tests/evidence/process-rename-2026-11-03/api-round.json)、[Python 3.13.9 回归](../tests/evidence/process-rename-2026-11-03/python313-tests.txt)、[改名回归日志](../tests/evidence/process-rename-precheck.txt)、[接口定向检查](../tests/evidence/process-rename-targeted.txt)。
+
 ## 2026-10-19：审查整改与文档收敛
 
 依据 [当前修改审查快照](archive/2026-10-19/v0.3-current-review-2026-10-19.md)，处理 OI-048～055 的 8 组代码问题及 OI-056 的文档问题。公开使用方式继续采用当前 Graph/Node/Hub/Info 契约，OI-057 的工具步数分歧保留在问题清单。

@@ -17,7 +17,7 @@ from easy_agent import (
 
 
 class Identity(Node):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         return info
 
 
@@ -26,12 +26,12 @@ class Append(Node):
         super().__init__()
         self.suffix = suffix
 
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         return Info(info.text + self.suffix)
 
 
 class Join(Node):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         return Info(f"{info.get('tail')}|{info.get('right')}")
 
 
@@ -41,13 +41,13 @@ class UpperTool(Tool):
 
 
 class Slow(Node):
-    async def forward(self, info: Info) -> Info:
+    async def process(self, info: Info) -> Info:
         await asyncio.sleep(0.1)
         return info
 
 
 class RaisesPythonTimeout(Node):
-    async def forward(self, info: Info) -> Info:
+    async def process(self, info: Info) -> Info:
         raise TimeoutError("tool-side timeout")
 
 
@@ -57,7 +57,7 @@ class Gate(Node):
         self.started = started
         self.release = release
 
-    async def forward(self, info: Info) -> Info:
+    async def process(self, info: Info) -> Info:
         self.started.set()
         await self.release.wait()
         return info

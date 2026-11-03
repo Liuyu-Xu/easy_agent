@@ -18,7 +18,7 @@ from easy_agent.config import read_selected_env
 
 
 class Echo(Node):
-    def forward(self, info):
+    def process(self, info):
         return info
 
 
@@ -57,7 +57,7 @@ class AssemblyTests(Fixture, unittest.TestCase):
         seen = []
 
         class Add(Node):
-            def forward(self, info):
+            def process(self, info):
                 seen.append((self.role, info.text))
                 return Info(info.text + self.role)
 
@@ -349,7 +349,7 @@ class ConcurrentTests(Fixture, unittest.IsolatedAsyncioTestCase):
         entered, release = asyncio.Event(), asyncio.Event()
 
         class Waiting(Echo):
-            async def forward(self, info):
+            async def process(self, info):
                 entered.set()
                 await release.wait()
                 return info

@@ -16,12 +16,12 @@ from easy_agent.config import read_selected_env
 
 
 class Identity(Node):
-    def forward(self, info):
+    def process(self, info):
         return info
 
 
 class ReadTool(Tool):
-    def forward(self, info):
+    def process(self, info):
         return info
 
 
@@ -88,7 +88,7 @@ class Step1DefinitionTests(unittest.TestCase):
         calls = []
 
         class CountTool(ReadTool):
-            def forward(self, info):
+            def process(self, info):
                 calls.append(info)
                 return info
 
@@ -249,7 +249,7 @@ class Step1DefinitionTests(unittest.TestCase):
                 return value.strip()
 
         class Emit(Node):
-            def forward(self, info):
+            def process(self, info):
                 return Info({"text": "  hello  "})
 
         graph = self.graph()
@@ -259,7 +259,7 @@ class Step1DefinitionTests(unittest.TestCase):
         self.assertEqual(result.data["count"], 7)
         self.assertEqual(validations, ["  hello  "])
 
-    def test_changed_input_is_explicitly_blocked_before_forward(self):
+    def test_changed_input_is_explicitly_blocked_before_process(self):
         try:
             from pydantic import BaseModel
         except ImportError:
@@ -271,7 +271,7 @@ class Step1DefinitionTests(unittest.TestCase):
         calls = []
 
         class Observe(Node):
-            def forward(self, info):
+            def process(self, info):
                 calls.append(info)
                 return info
 
@@ -327,11 +327,11 @@ class Step1DefinitionTests(unittest.TestCase):
         observed = []
 
         class Emit(Node):
-            def forward(self, info):
+            def process(self, info):
                 return Info({"flag": " yes ", "nested": {"count": 7}, "ignored": 1})
 
         class Observe(Node):
-            def forward(self, info):
+            def process(self, info):
                 observed.append(info)
                 return info
 
@@ -365,7 +365,7 @@ class Step1DefinitionTests(unittest.TestCase):
         calls = []
 
         class Emit(Node):
-            def forward(self, info):
+            def process(self, info):
                 calls.append(info)
                 return Info({"text": "ok"})
 
@@ -380,7 +380,7 @@ class Step1DefinitionTests(unittest.TestCase):
         calls = []
 
         class TransientCandidate(Node):
-            def forward(self, info):
+            def process(self, info):
                 calls.append(info)
                 raise ConnectionError("controlled adapter-like failure")
 
@@ -396,7 +396,7 @@ class Step1DefinitionTests(unittest.TestCase):
         errors = []
 
         class Stubborn(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 try:
                     await asyncio.sleep(10)
                 except asyncio.CancelledError:
@@ -445,14 +445,14 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
         calls = []
 
         class Late(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 try:
                     await asyncio.sleep(10)
                 except asyncio.CancelledError:
                     return Info("late")
 
         class Downstream(Node):
-            def forward(self, info):
+            def process(self, info):
                 calls.append(info)
                 return info
 
@@ -484,7 +484,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
                 return value
 
         class Emit(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 return Info({"text": "late"})
 
         graph = self.graph(timeout=0.01)
@@ -496,7 +496,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
         entered, release, swallowed = asyncio.Event(), asyncio.Event(), asyncio.Event()
 
         class Stubborn(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 entered.set()
                 try:
                     await release.wait()
@@ -535,7 +535,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
         entered, release = asyncio.Event(), asyncio.Event()
 
         class Waiting(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 entered.set()
                 await release.wait()
                 return info
@@ -570,7 +570,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
                 super().__init__(tools=[tool])
                 self.index = index
 
-            async def forward(self, info):
+            async def process(self, info):
                 entries[self.index].set()
                 await releases[self.index].wait()
                 return info
@@ -599,7 +599,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
         entered, swallowed, release, exited = (asyncio.Event() for _ in range(4))
 
         class Stubborn(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 entered.set()
                 try:
                     await release.wait()
@@ -644,7 +644,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
         entered, swallowed, release = (asyncio.Event() for _ in range(3))
 
         class Stubborn(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 entered.set()
                 try:
                     await release.wait()
@@ -711,7 +711,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
         clock = [0.0]
 
         class Later(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 clock[0] += 0.2
                 await asyncio.sleep(0)
                 return info
@@ -738,7 +738,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
                 return super().__iter__()
 
         class Waiting(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 entered.set()
                 await release.wait()
                 return info
@@ -771,7 +771,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_completion_order_and_delivery_order_agree(self):
         class Emit(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 return Info(self.name)
 
         graph = self.graph(max_concurrency=2)
@@ -816,7 +816,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
                 super().__init__()
                 self.index = index
 
-            async def forward(self, info):
+            async def process(self, info):
                 entered[self.index].set()
                 await released[self.index].wait()
                 return Info(self.name)
@@ -854,13 +854,13 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
         release = asyncio.Event()
 
         class Fail(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 entered[0].set()
                 await release.wait()
                 raise ValueError("first notification fails")
 
         class Emit(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 entered[1].set()
                 await release.wait()
                 return Info("late")
@@ -888,7 +888,7 @@ class Step1RuntimeTests(unittest.IsolatedAsyncioTestCase):
         calls = []
 
         class Waiting(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 calls.append(info.text)
                 if len(calls) == 2:
                     entered.set()

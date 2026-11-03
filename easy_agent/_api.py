@@ -238,7 +238,7 @@ async def _post(context: ModelAttempt, body: dict[str, Any], remaining: float | 
 async def call_model(info: Info, node_id: str) -> Info:
     context = _ATTEMPT.get()
     if context is None or context.node_id != node_id or context.task is not asyncio.current_task():
-        raise _safe_error(UnsupportedFeatureError, "内置 Node.forward 必须由 Graph 的当前尝试调用")
+        raise _safe_error(UnsupportedFeatureError, "内置 Node.process 必须由 Graph 的当前尝试调用")
     config = context.config
     validate_model_config(
         config, output_schema=context.output_schema,

@@ -47,6 +47,11 @@ class _ReceiveRule:
 class Node:
     _declaration_fields = _DEFINITION_FIELDS
 
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if "forward" in cls.__dict__:
+            raise TypeError("Node.forward 已移除；请实现 process(info)")
+
     def __init__(
         self,
         *,
@@ -367,7 +372,7 @@ class Node:
             raise _safe_error(OwnershipError, "route 目标必须已经注册到同一个 Graph")
         return target.id
 
-    async def forward(self, info: Info) -> Info:
+    async def process(self, info: Info) -> Info:
         from ._api import call_model
 
         return await call_model(info, self.id)
@@ -385,6 +390,7 @@ class Node:
         return owner.logs(
             run_id=run_id,
             node=self,
+            category="node",
             node_execution_id=node_execution_id,
             event_type=event_type,
             offset=offset,
@@ -393,4 +399,4 @@ class Node:
 
     @property
     def is_async(self) -> bool:
-        return inspect.iscoroutinefunction(self.forward)
+        return inspect.iscoroutinefunction(self.process)

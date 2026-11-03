@@ -11,14 +11,14 @@ from unittest.mock import patch
 import httpx
 
 from easy_agent import (
-    ConfigurationError, Graph, GraphValidationError, Info, LoggingError, Node,
+    ConfigurationError, ExecutionLimitError, Graph, GraphValidationError, Info, LoggingError, Node,
     NodeExecutionError, NodeTimeoutError, OwnershipError, ResultError, Tool,
 )
 from easy_agent.config import read_selected_env
 
 
 class Echo(Node):
-    def forward(self, info):
+    def process(self, info):
         return info
 
 
@@ -36,16 +36,43 @@ class SurfaceFixture:
 
 
 class PublicWorkflowTests(SurfaceFixture, unittest.TestCase):
+    def test_pure_node_does_not_resolve_model_account(self):
+        graph = self.graph()
+        graph.echo = Echo()
+        with patch.dict(
+            os.environ,
+            {"EASY_AGENT_MODEL": "standard", "LLM_MODEL_ID": "legacy"},
+            clear=True,
+        ):
+            self.assertEqual(graph.run([Info("pure")])[0].text, "pure")
+
+    def test_max_steps_failure_has_node_failure_event(self):
+        class Suffix(Node):
+            def process(self, info):
+                return Info(info.text + "!")
+
+        graph = self.graph()
+        graph.max_steps = 1
+        graph.first, graph.second = Suffix(), Suffix()
+        graph.first.send_to(graph.second)
+
+        with self.assertRaises(ExecutionLimitError) as raised:
+            graph.run([Info("x")])
+
+        events = graph.logs(run_id=raised.exception.run_id, category=None, limit=1000)
+        failed = [event for event in events if event["event_type"] == "NodeFailed"]
+        self.assertEqual(len(failed), 1)
+        self.assertEqual(failed[0]["data"]["reason"], "max_steps")
     def test_two_node_workflow_returns_info_and_keeps_provenance(self):
         inputs = []
 
         class First(Node):
-            def forward(self, info):
+            def process(self, info):
                 inputs.append(('first', info.text))
                 return Info(info.text + '-A')
 
         class Second(Node):
-            def forward(self, info):
+            def process(self, info):
                 inputs.append(('second', info.text))
                 return Info(info.text + '-B')
 
@@ -88,7 +115,7 @@ class PublicWorkflowTests(SurfaceFixture, unittest.TestCase):
 
     def test_business_failure_has_its_own_run_id(self):
         class SometimesFails(Node):
-            def forward(self, info):
+            def process(self, info):
                 if info.text == 'fail':
                     raise ValueError('synthetic failure')
                 return info
@@ -146,7 +173,7 @@ class AsyncWorkflowTests(SurfaceFixture, unittest.IsolatedAsyncioTestCase):
         entered, release = asyncio.Event(), asyncio.Event()
 
         class Waiting(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 entered.set()
                 await release.wait()
                 return info
@@ -166,7 +193,7 @@ class AsyncWorkflowTests(SurfaceFixture, unittest.IsolatedAsyncioTestCase):
         entered, release = asyncio.Event(), asyncio.Event()
 
         class Ordered(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 if info.text == 'old':
                     entered.set()
                     await release.wait()
@@ -190,7 +217,7 @@ class AsyncWorkflowTests(SurfaceFixture, unittest.IsolatedAsyncioTestCase):
                 entered, release = asyncio.Event(), asyncio.Event()
 
                 class Fails(Node):
-                    async def forward(self, info):
+                    async def process(self, info):
                         if info.text == 'old':
                             entered.set()
                             await release.wait()
@@ -229,7 +256,7 @@ class AsyncWorkflowTests(SurfaceFixture, unittest.IsolatedAsyncioTestCase):
         entered = asyncio.Event()
 
         class Waiting(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 if info.text == 'wait':
                     entered.set()
                     await asyncio.Event().wait()
@@ -249,7 +276,7 @@ class AsyncWorkflowTests(SurfaceFixture, unittest.IsolatedAsyncioTestCase):
 
     async def test_deadline_raises_and_cleans_up(self):
         class Waiting(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 await asyncio.Event().wait()
                 return info
 
@@ -338,7 +365,7 @@ class DeclarationContractTests(SurfaceFixture, unittest.TestCase):
         node.timeout = None
         self.assertIsNone(node.timeout)
 
-    def test_provider_ranges_are_not_applied_to_custom_forward(self):
+    def test_provider_ranges_are_not_applied_to_custom_process(self):
         graph = self.graph(temperature=3)
         graph.node = Echo(provider='custom', temperature=-1)
         self.assertEqual(graph.run([Info('ok')])[0].text, 'ok')

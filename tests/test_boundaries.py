@@ -14,7 +14,7 @@ class BoundaryTests(Fixture, unittest.TestCase):
         seen = []
 
         class Collect(Node):
-            def forward(self, info):
+            def process(self, info):
                 seen.append(info)
                 return info
 
@@ -119,7 +119,7 @@ class BoundaryTests(Fixture, unittest.TestCase):
 class AsyncBoundaryTests(Fixture, unittest.IsolatedAsyncioTestCase):
     async def test_concurrent_multi_input_runs_do_not_mix_join_groups(self):
         class Yielding(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 await asyncio.sleep(0)
                 return info
 
@@ -136,13 +136,13 @@ class AsyncBoundaryTests(Fixture, unittest.IsolatedAsyncioTestCase):
         left_ready, release, committed = asyncio.Event(), asyncio.Event(), asyncio.Event()
 
         class Left(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 left_ready.set()
                 await release.wait()
                 return Info('LEFT')
 
         class Right(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 await left_ready.wait()
                 return Info('RIGHT')
 
@@ -174,7 +174,7 @@ class AsyncBoundaryTests(Fixture, unittest.IsolatedAsyncioTestCase):
         entered, release = asyncio.Event(), asyncio.Event()
 
         class Waiting(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 entered.set()
                 await release.wait()
                 return info
@@ -192,12 +192,12 @@ class AsyncBoundaryTests(Fixture, unittest.IsolatedAsyncioTestCase):
         finished = asyncio.Event()
 
         class Success(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 finished.set()
                 return Info('ok')
 
         class Failure(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 await finished.wait()
                 raise ValueError('synthetic branch failure')
 

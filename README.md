@@ -32,11 +32,11 @@ print(outputs[0].text)
 
 上述路径是本项目用户指定的外部账户文件，不是库默认配置。不同节点可指定不同文件及参数。`run` 返回本次运行的 `list[Info]`；异步调用为 `await graph.arun(inputs)`，没有公开 `result()`。
 
-不调用模型的节点可以直接覆盖 `forward`：
+不调用模型的节点可以直接覆盖 `process`：
 
 ```python
 class Double(Node):
-    def forward(self, info):
+    def process(self, info):
         return Info(info.data * 2)
 
 node = Double()

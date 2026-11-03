@@ -3,7 +3,7 @@
 A blocking call must run off the event loop *and* stay tracked, otherwise a
 graph definition could be edited while the thread still reads it. The executor
 is provided by the running attempt through a context variable so that
-``Tool.forward`` can reach it without importing the graph module.
+``Tool.process`` can reach it without importing the graph module.
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 """Compilation of graph definitions into an immutable execution plan.
 
 Compilation resolves configuration and tool declarations under the definition
-lock, then builds the plan. Business forward methods are not invoked here.
+lock, then builds the plan. Business process methods are not invoked here.
 """
 
 from __future__ import annotations
@@ -75,11 +75,25 @@ class _CompilerMixin:
             if node.owner is not self or node.name != name:
                 raise _safe_error(OwnershipError, f"节点 {name} 的所有权或注册名称不一致")
 
-            effective = resolver.resolve(node)
+            is_model_node = getattr(node.process, "__func__", None) is Node.process
+            explicit_account_scope = (
+                self._env_file is not None
+                or node.env_file is not None
+                or self._api_key_env_explicit
+                or node.api_key_env is not None
+                or any(
+                    self._graph_defaults[key] is not None
+                    for key in ("provider", "model", "base_url")
+                )
+            )
+            effective = resolver.resolve(
+                node,
+                resolve_account=is_model_node or explicit_account_scope,
+            )
             hub_contract = node._hub_contract if isinstance(node, HubNode) else None
             if hub_contract is not None:
-                if getattr(node.forward, "__func__", None) is not Node.forward:
-                    raise _safe_error(UnsupportedFeatureError, "首版 Hub 使用内置模型执行，不支持覆盖 forward")
+                if getattr(node.process, "__func__", None) is not Node.process:
+                    raise _safe_error(UnsupportedFeatureError, "首版 Hub 使用内置模型执行，不支持覆盖 process")
                 effective = {**effective, "prompt": hub_contract.prompt, "role": None}
             standalone_tool = self._describe_tool(node) if isinstance(node, Tool) else None
             if standalone_tool is not None:
@@ -122,7 +136,7 @@ class _CompilerMixin:
                 tool_descriptors.append(descriptor)
             public_values[f"nodes.{name}.tools"] = ",".join(tool_names)
 
-            if getattr(node.forward, "__func__", None) is Node.forward:
+            if is_model_node:
                 validate_model_config(
                     effective, output_schema=node.output_schema,
                     api_key=resolver.secret_values.get(effective['_secret_id']),
@@ -170,7 +184,7 @@ class _CompilerMixin:
                 input_schema=node.input_schema,
                 output_schema=node.output_schema,
                 max_parallelism=node.max_parallelism,
-                forward=node.forward,
+                process=node.process,
                 tools=tuple(tool_descriptors),
                 tool=standalone_tool,
                 deliveries=deliveries,
@@ -350,7 +364,7 @@ class _CompilerMixin:
             name=name,
             required_permissions=frozenset(getattr(tool, "required_permissions", ())),
             side_effect=effect,
-            callable=tool.forward if isinstance(tool, Tool) else tool,
+            callable=tool.process if isinstance(tool, Tool) else tool,
             kind=kind,
             spec=spec,
             parameters=parameters,

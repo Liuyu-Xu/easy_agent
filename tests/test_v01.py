@@ -23,46 +23,46 @@ from easy_agent import (
 
 
 class Strip(Node):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         return Info(info.text.strip())
 
 
 class AddBang(Node):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         return Info(info.text + "!")
 
 
 class Identity(Node):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         return info
 
 
 class Left(Node):
-    async def forward(self, info: Info) -> Info:
+    async def process(self, info: Info) -> Info:
         await asyncio.sleep(0)
         return Info(info.text + "-left")
 
 
 class Right(Node):
-    async def forward(self, info: Info) -> Info:
+    async def process(self, info: Info) -> Info:
         await asyncio.sleep(0)
         return Info(info.text + "-right")
 
 
 class Summary(Node):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         return Info(f"{info.get('left')}|{info.get('right')}")
 
 
 class Writer(Node):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         if isinstance(info.data, str):
             return Info({"text": info.text, "round": 0})
         return Info({"text": info.get("text"), "round": info.get("round")})
 
 
 class Reviewer(Node):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         round_number = info.get("round") + 1
         return Info(
             {
@@ -198,7 +198,7 @@ class V01Tests(unittest.TestCase):
 
     def test_route_without_match_fails_with_run_id(self) -> None:
         class Classifier(Node):
-            def forward(self, info: Info) -> Info:
+            def process(self, info: Info) -> Info:
                 return Info({"kind": "unknown"})
 
         graph = Graph()

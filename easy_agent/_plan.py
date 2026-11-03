@@ -142,7 +142,7 @@ class _NodePlan:
     input_schema: type | None
     output_schema: type | None
     max_parallelism: int | None
-    forward: Any
+    process: Any
     tools: tuple[_ToolDescriptor, ...]
     tool: _ToolDescriptor | None
     deliveries: tuple[_Edge, ...]

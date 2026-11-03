@@ -13,7 +13,7 @@ from easy_agent.config import read_selected_env
 
 
 class Echo(Node):
-    def forward(self, info):
+    def process(self, info):
         return info
 
 
@@ -124,7 +124,7 @@ class RuntimeCleanupTests(unittest.IsolatedAsyncioTestCase):
                 entered, release = asyncio.Event(), asyncio.Event()
 
                 class Waiting(Node):
-                    async def forward(self, info):
+                    async def process(self, info):
                         entered.set()
                         await release.wait()
                         if outcome == 'failure':
@@ -164,7 +164,7 @@ class RuntimeCleanupTests(unittest.IsolatedAsyncioTestCase):
         entered, release = asyncio.Event(), asyncio.Event()
 
         class Waiting(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 entered.set()
                 await release.wait()
                 return info
@@ -196,7 +196,7 @@ class RuntimeCleanupTests(unittest.IsolatedAsyncioTestCase):
                 return super()._commit_outcome(state, outcome, sequence)
 
         class Decrement(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 remaining = info.get('remaining') - 1
                 return Info({'remaining': remaining, 'again': remaining > 0})
 

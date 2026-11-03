@@ -1,0 +1,222 @@
+D:\project\easy_agent\tests\test_v02.py:124: DeprecationWarning: retry 已弃用；请改用表示总机会数的 max_attempts
+  graph = Graph(execution="async", retry=0, timeout=1)
+======================================================================
+ERROR: test_async_timeout_still_cancels_without_a_thread (test_execution_fixes.BlockingExecutionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_execution_fixes.py", line 240, in test_async_timeout_still_cancels_without_a_thread
+    timed_out = graph.node.logs(
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_timed_out_sync_attempt_records_enforcement (test_execution_fixes.BlockingExecutionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_execution_fixes.py", line 221, in test_timed_out_sync_attempt_records_enforcement
+    timed_out = graph.node.logs(
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_non_retryable_custom_failure_still_has_one_attempt (test_execution_fixes.RetryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_execution_fixes.py", line 357, in test_non_retryable_custom_failure_still_has_one_attempt
+    len(graph.node.logs(
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_retryable_status_is_retried_until_success (test_execution_fixes.RetryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_execution_fixes.py", line 266, in test_retryable_status_is_retried_until_success
+    attempts = graph.llm.logs(
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_json_type_change_is_not_mistaken_for_equal_passthrough (test_step1.Step1DefinitionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_step1.py", line 305, in test_json_type_change_is_not_mistaken_for_equal_passthrough
+    produced = graph.node.logs(run_id=result.run_id, event_type="InfoProduced")
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_schema_serialization_failure_and_deterministic_failure_do_not_retry (test_step1.Step1DefinitionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_step1.py", line 377, in test_schema_serialization_failure_and_deterministic_failure_do_not_retry
+    self.assertEqual(len(graph.node.logs(run_id=raised.exception.run_id, event_type="NodeSucceeded")), 0)
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_unclassified_adapter_like_failure_still_has_one_attempt (test_step1.Step1DefinitionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_step1.py", line 392, in test_unclassified_adapter_like_failure_still_has_one_attempt
+    self.assertEqual(len(graph.node.logs(run_id=raised.exception.run_id, event_type="NodeAttemptStarted")), 1)
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_max_steps_failure_has_node_failure_event (test_user_surface.PublicWorkflowTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_user_surface.py", line 55, in test_max_steps_failure_has_node_failure_event
+    graph = self.graph(max_steps=1)
+  File "D:\project\easy_agent\tests\test_user_surface.py", line 35, in graph
+    return Graph(log_dir=self.root / 'logs', **options)
+TypeError: Graph.__init__() got an unexpected keyword argument 'max_steps'
+
+======================================================================
+ERROR: test_passthrough_keeps_identity_until_graph_publishes_result (test_v01.V01Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_v01.py", line 152, in test_passthrough_keeps_identity_until_graph_publishes_result
+    produced = graph.identity.logs(
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_sequential_chain_result_provenance_and_logs (test_v01.V01Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_v01.py", line 139, in test_sequential_chain_result_provenance_and_logs
+    node_events = graph.finish.logs(run_id=result.run_id, limit=1000)
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_async_timeout_stops_run_without_retrying (test_v02.V02Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_v02.py", line 112, in test_async_timeout_stops_run_without_retrying
+    attempts = graph.slow.logs(
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_defaults_log_dir_and_python_dotenv (test_v02.V02Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_v02.py", line 92, in test_defaults_log_dir_and_python_dotenv
+    config["public_values"]["nodes.node.model"],
+KeyError: 'nodes.node.model'
+
+======================================================================
+ERROR: test_python_timeout_error_is_not_graph_deadline (test_v02.V02Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_v02.py", line 133, in test_python_timeout_error_is_not_graph_deadline
+    len(graph.node.logs(run_id=run_id, event_type="NodeTimedOut")), 0
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_business_timeout_is_not_a_framework_deadline (test_v03.V03Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_v03.py", line 114, in test_business_timeout_is_not_a_framework_deadline
+    len(graph.node.logs(run_id=raised.exception.run_id, event_type="NodeTimedOut")),
+  File "D:\project\easy_agent\easy_agent\node.py", line 390, in logs
+    return owner.logs(
+  File "D:\project\easy_agent\easy_agent\graph.py", line 1710, in logs
+    raise ValueError("指定 node 时 category 必须为 node 或 None")
+ValueError: 指定 node 时 category 必须为 node 或 None
+
+======================================================================
+ERROR: test_max_attempts_counts_the_first_attempt_and_retry_is_compatible (test_v03.V03Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_v03.py", line 85, in test_max_attempts_counts_the_first_attempt_and_retry_is_compatible
+    started["data"]["config"]["public_values"]["nodes.node.base_url"],
+KeyError: 'nodes.node.base_url'
+
+======================================================================
+FAIL: test_request_mapping_identity_provenance_and_secret_protection (test_api.ApiTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 64, in _callTestMethod
+    self._callMaybeAsync(method)
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 87, in _callMaybeAsync
+    return self._asyncioTestLoop.run_until_complete(fut)
+  File "D:\anaconda3\envs\common\lib\asyncio\base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "D:\anaconda3\envs\common\lib\unittest\async_case.py", line 101, in _asyncioLoopRunner
+    ret = await awaitable
+  File "D:\project\easy_agent\tests\test_api.py", line 108, in test_request_mapping_identity_provenance_and_secret_protection
+    self.assertEqual(graph.logs(run_id=result.run_id, category="audit"), [])
+AssertionError: Lists differ: [{'event_id': '11e3e79277b344a4b5d66814ca8[618 chars]ue}}] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+{'event_id': '11e3e79277b344a4b5d66814ca83351f', 'event_type': 'SecretReferenceResolved', 'category': 'audit', 'run_id': '5ce76e8b23244307b8f0b5f1a70ff096', 'trace_id': '5ce76e8b23244307b8f0b5f1a70ff096', 'span_id': None, 'parent_span_id': None, 'node_id': None, 'node_execution_id': None, 'attempt': None, 'info_ids': [], 'delivery_id': None, 'cause_event_id': None, 'fork_group_id': None, 'session_id': None, 'round_index': None, 'tool_call_id': None, 'worker_id': 'coordinator', 'local_sequence': 2, 'commit_sequence': 2, 'timestamp': '2026-11-03T09:09:00.428029+00:00', 'data': {'secret_reference': 'TEST_MODEL_KEY', 'source': 'os.environ', 'resolved': True}}
+
+Diff is 783 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_failed_config_edit_restores_node_file_and_retains_input_budget_limitation (test_involve.AccountTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_involve.py", line 277, in test_failed_config_edit_restores_node_file_and_retains_input_budget_limitation
+    with self.assertRaises(ConfigurationError):
+AssertionError: ConfigurationError not raised
+
+======================================================================
+FAIL: test_dotenv_is_private_and_secret_is_not_exported_or_logged (test_v01.V01Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_v01.py", line 236, in test_dotenv_is_private_and_secret_is_not_exported_or_logged
+    self.assertIn("SecretReferenceResolved", audit)
+AssertionError: 'SecretReferenceResolved' not found in '[]'
+
+======================================================================
+FAIL: test_dotenv_is_literal_and_rejects_ambiguous_input (test_v03.V03Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\project\easy_agent\tests\test_v03.py", line 253, in test_dotenv_is_literal_and_rejects_ambiguous_input
+    self.assertTrue(any(item["data"]["resolved"] for item in audit))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 249 tests in 17.422s
+
+FAILED (failures=4, errors=15)

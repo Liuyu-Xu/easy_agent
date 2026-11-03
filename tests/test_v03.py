@@ -19,7 +19,7 @@ from easy_agent import (
 
 
 class Identity(Node):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         return info
 
 
@@ -28,17 +28,17 @@ class Add(Node):
         super().__init__()
         self.suffix = suffix
 
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         return Info(info.text + self.suffix)
 
 
 class ForwardOnlyTool(Tool):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         return Info(info.text.upper())
 
 
 class SyncBusinessTimeout(Node):
-    def forward(self, info: Info) -> Info:
+    def process(self, info: Info) -> Info:
         raise TimeoutError("business timeout")
 
 
@@ -48,7 +48,7 @@ class Cancellable(Node):
         self.started = started
         self.cleaned = cleaned
 
-    async def forward(self, info: Info) -> Info:
+    async def process(self, info: Info) -> Info:
         self.started.set()
         try:
             await asyncio.Event().wait()
@@ -61,7 +61,7 @@ class ConcurrencyProbe(Node):
         super().__init__()
         self.state = state
 
-    async def forward(self, info: Info) -> Info:
+    async def process(self, info: Info) -> Info:
         self.state["active"] += 1
         self.state["peak"] = max(self.state["peak"], self.state["active"])
         try:

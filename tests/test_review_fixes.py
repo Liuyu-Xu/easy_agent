@@ -37,7 +37,7 @@ class ReviewRegressionTests(FixTestCase):
         attempts = []
 
         class Flaky(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 attempts.append(1)
                 if len(attempts) == 1:
                     raise retryable_error()
@@ -45,7 +45,7 @@ class ReviewRegressionTests(FixTestCase):
                 return Info("retried")
 
         class Waiting(Node):
-            async def forward(self, info):
+            async def process(self, info):
                 await unlocked.wait()
                 return Info("unlocked")
 
@@ -63,11 +63,11 @@ class ReviewRegressionTests(FixTestCase):
             started = asyncio.Event()
 
             class Flaky(Node):
-                async def forward(self, info):
+                async def process(self, info):
                     raise retryable_error()
 
             class Waiting(Node):
-                async def forward(self, info):
+                async def process(self, info):
                     started.set()
                     await asyncio.Event().wait()
 
@@ -265,7 +265,7 @@ class ReviewRegressionTests(FixTestCase):
 
     def test_internal_tool_rejects_incompatible_input_schema_before_http(self):
         class Restricted(Tool):
-            async def forward(self, info):
+            async def process(self, info):
                 self.fail("invalid schema must not execute")
 
         graph = self.api_graph(allowed_tools={"Restricted"})
@@ -277,7 +277,7 @@ class ReviewRegressionTests(FixTestCase):
         for invalid in (Info("wrong-type"), 3):
             with self.subTest(invalid=type(invalid).__name__):
                 class Restricted(Tool):
-                    async def forward(self, info):
+                    async def process(self, info):
                         return invalid
 
                 _, requests, _ = self.model_run(
@@ -289,7 +289,7 @@ class ReviewRegressionTests(FixTestCase):
 
     def test_internal_tool_valid_schema_keeps_info_boundary(self):
         class Count(Tool):
-            def forward(self, info):
+            def process(self, info):
                 return Info(len(info.data))
 
         _, requests, _ = self.model_run(Count(input_schema=dict, output_schema=int), [
@@ -318,7 +318,7 @@ class ReviewRegressionTests(FixTestCase):
                 return self.data
 
         class Restricted(Tool):
-            async def forward(self, info):
+            async def process(self, info):
                 entered.append(info.data["value"])
                 return Info(info.data["value"])
 
